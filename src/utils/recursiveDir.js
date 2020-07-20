@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const { compileFile } = require('./getConfigData')
+const {compileFile} = require('./getConfigData')
 const recursiveDir = (_path, readFileBeforeCallback, readFileCallback) => {
   fs.readdir(_path, (err, files) => {
     files.forEach((fileName) => {
