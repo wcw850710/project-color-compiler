@@ -4,6 +4,6 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node sass-compiler/main.js"
+    "start": "node src/main.js"
   }
 }

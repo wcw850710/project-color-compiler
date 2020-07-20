@@ -1,5 +1,0 @@
-{
-  "file-extensions": ["sass"],
-  "compile-file": ["_var", "sass"],
-  "compile-path": "./src/styles/"
-}
