@@ -97,7 +97,6 @@
       } else if (txt === '#') {
         const color = getColor(input, cur)
         const style = getStyleName(input, colorIndex)
-        console.log(style)
         result['#' + color] ? result['#' + color].add(`[${fileName}]: ${style}`) : result['#' + color] = new Set([`[${fileName}]: ${style}`])
         colors.add('#' + color)
       }
