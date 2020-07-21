@@ -44,7 +44,6 @@
     return result
   }
 
-  //TODO: 變例檔案更改顏色為變亮；支援 SASS, VUE, SCSS, JS 副檔名, commit 優化
   const setSassVariableToFile = () => {
     let index = 0
     let isFirstAdd = true
@@ -54,10 +53,11 @@
     if (Object.keys(result).length) {
       for (const color in result) {
         index++
-        const commit = '// ' + [...result[color]].join(', ')
+        // 先移除 commit
+        // const commit = '// ' + [...result[color]].join(', ')
         const colorResultVariableName = colorsFileResult[color]
         let variableName = colorResultVariableName ? '$' + colorResultVariableName : '$' + createHash()
-        colorsFileData += `${isFirstAdd ? '' : '\n'}${variableName}: ${color} ${commit}`
+        colorsFileData += `${isFirstAdd ? '' : '\n'}${variableName}: ${color}`
         isFirstAdd && (isFirstAdd = false)
         if (colorResultVariableName){
           variableName = colorResultVariableName
