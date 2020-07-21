@@ -1,0 +1,5 @@
+{
+  "file-extensions": ["sass"],
+  "compile-file": ["_colors", "sass"],
+  "compile-path": "./test/styles/"
+}

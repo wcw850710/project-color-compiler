@@ -5,5 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node src/compiler/index.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
   }
 }
