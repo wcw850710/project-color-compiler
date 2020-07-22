@@ -2,12 +2,8 @@ const express = require('express');
 const app = express();
 const path = require('path')
 
-
-app.use('/', express.static('./src/gui'));
 app.get('/', (req, res) => {
-  res.sendFile('index.html', {
-    root: path.join(__dirname, '../gui')
-  })
+  res.status(200).send('hello express!')
 })
 
 app.listen(4200, function () {
