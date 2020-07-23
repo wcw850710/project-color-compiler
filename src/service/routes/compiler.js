@@ -5,12 +5,12 @@ module.exports = (_config) => new Promise((reslove, reject) => {
   const recursiveDir = require("../utils/recursiveDir")
   const createHash = require('../utils/createHash')
   const config = getConfig(_config)
-  const {compileFilePath, rootPath} = config
+  const {fileExtensions, compileFilePath, rootPath, compileFileType} = config
   const result = {}
-  let cacheSassFiles = []
-  let cacheSassFileColors = []
-  let sassFileLength = 0
-  let sassCompileCurrent = 0
+  let cacheFile = []
+  let cacheFileColors = []
+  let cacheFileLength = 0
+  let compileCurrent = 0
 
   // 讀取 colors file 變倒出 fileData: string
   const readColorsFileData = () => new Promise(reslove => {
@@ -49,62 +49,67 @@ module.exports = (_config) => new Promise((reslove, reject) => {
   }
 
   // 倒數第二步：將變量數據創建到對應的 colors file
-  const setSassVariableToFile = async () => {
+  const setVariableToFile = async () => {
     const resultColorVariables = {}
     let colorsFileData = await readColorsFileData()
     const colorsFileResult = compilerColorsFileData(colorsFileData)
     let newColorsFileData = ''
     if (Object.keys(result).length) {
-      for (const color in colorsFileResult) {
-        if(result[color]) {
-          const variable = colorsFileResult[color]
-          newColorsFileData += `$${variable}: ${color}\n`
-          resultColorVariables[color] = `$${variable}`
-          delete result[color]
+      const isSass = fileExtensions['.sass'] === true
+      const isScss = fileExtensions['.scss'] === true
+      if(isSass || isScss) {
+        const period = (compileFileType === 'scss' ? ';' : '') + '\n'
+        for (const color in colorsFileResult) {
+          if(result[color]) {
+            const variable = colorsFileResult[color]
+            newColorsFileData += `$${variable}: ${color}${period}`
+            resultColorVariables[color] = `$${variable}`
+            delete result[color]
+          }
         }
-      }
-      for (const color in result) {
-        if(!colorsFileResult[color]) {
-          const variable = createHash()
-          newColorsFileData += `$${variable}: ${color}\n`
-          resultColorVariables[color] = `$${variable}`
-          delete result[color]
+        for (const color in result) {
+          if(!colorsFileResult[color]) {
+            const variable = createHash()
+            newColorsFileData += `$${variable}: ${color}${period}`
+            resultColorVariables[color] = `$${variable}`
+            delete result[color]
+          }
         }
       }
       fs.writeFileSync(compileFilePath, newColorsFileData)
-      setColorVariableToSassFiles(resultColorVariables)
+      setColorVariableToFiles(resultColorVariables)
     }
   }
 
-  // 最後一部：遍歷所有 sass file，將顏色轉成變量
-  const setColorVariableToSassFiles = (resultColorVariables) => {
+  // 最後一部：遍歷所有 file，將顏色轉成變量
+  const setColorVariableToFiles = (resultColorVariables) => {
     let endIndex = 0
-    cacheSassFiles.forEach((path, index) => {
+    cacheFile.forEach((path, index) => {
       fs.readFile(path, (err, data) => {
-        let sassFileData = data.toString()
-        cacheSassFileColors[index].forEach((color) => {
-          sassFileData = sassFileData.replace(new RegExp(color, 'g'), resultColorVariables[color])
+        let fileData = data.toString()
+        cacheFileColors[index].forEach((color) => {
+          fileData = fileData.replace(new RegExp(color, 'g'), resultColorVariables[color])
         })
-        fs.writeFile(path, sassFileData, err => {
+        fs.writeFile(path, fileData, err => {
           if(err) {
             reject(false)
           }else {
-            ++endIndex === cacheSassFiles.length && reslove(true)
+            ++endIndex === cacheFile.length && reslove(true)
           }
         })
       })
     })
   }
 
-  // 將遍歷到的 sass file 路徑及顏色緩存起來，到最後一步遍歷 sass file 時可以提速
-  const recordCacheSassData = (newPath, colors) => {
+  // 將遍歷到的 file 路徑及顏色緩存起來，到最後一步遍歷 file 時可以提速
+  const recordCacheData = (newPath, colors) => {
     if(newPath !== compileFilePath) {
-      cacheSassFiles.push(newPath)
-      cacheSassFileColors.push([...colors])
+      cacheFile.push(newPath)
+      cacheFileColors.push([...colors])
     }
   }
 
-  // 將遍歷到的 sass fileData 轉成 Set(cache) 及 json(result) 格式，好讓後面調用
+  // 將遍歷到的 fileData 轉成 Set(cache) 及 json(result) 格式，好讓後面調用
   const compiler = (input, path, fileName) => {
     let cur = 0
     let colorIndex = 0
@@ -120,10 +125,13 @@ module.exports = (_config) => new Promise((reslove, reject) => {
       }
       cur++
     }
-    recordCacheSassData(path, colors)
-    ++sassCompileCurrent === sassFileLength && setSassVariableToFile()
+    // console.log(1, colors)
+    // console.log(2, result)
+    // return reslove(true)
+    recordCacheData(path, colors)
+    ++compileCurrent === cacheFileLength && setVariableToFile()
   }
 
   // 循環遍歷所有檔案，跟路徑從 rootPath 開始
-  recursiveDir(rootPath, config, () => sassFileLength++, (fileName, path, data) => compiler(data, path))
+  recursiveDir(rootPath, config, () => cacheFileLength++, (fileName, path, data) => compiler(data, path))
 })

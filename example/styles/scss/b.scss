@@ -1,0 +1,19 @@
+.a {
+  color: #666;
+  .b {
+    color: #777777;
+    .c {
+      color: #888;
+      .d {
+        color: #000;
+        .e {
+          color: #1c1c1c;
+        }
+      }
+    }
+  }
+}
+
+.zz {
+  color: #000;
+}
