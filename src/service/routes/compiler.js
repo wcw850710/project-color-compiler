@@ -50,7 +50,7 @@ module.exports = (_config) => new Promise((reslove, reject) => {
   }
 
   // 倒數第二步：將變量數據創建到對應的 colors file
-  const setVariableToFile = async () => {
+  const setVariableToCompileFile = async () => {
     const resultColorVariables = {}
     let colorsFileData = await readColorsFileData()
     const colorsFileResult = compilerColorsFileData(colorsFileData)
@@ -61,35 +61,39 @@ module.exports = (_config) => new Promise((reslove, reject) => {
       if(isSass || isScss) {
         const period = (compileFileType === 'scss' ? ';' : '') + '\n'
         for (const color in colorsFileResult) {
-          if(result[color]) {
-            const variable = colorsFileResult[color]
-            newColorsFileData += `$${variable}: ${color}${period}`
-            resultColorVariables[color] = `$${variable}`
-            delete result[color]
+          const noSpaceColor = color.replace(/\s/g, '')
+          if(result[noSpaceColor]) {
+            const variable = colorsFileResult[noSpaceColor]
+            newColorsFileData += `$${variable}: ${noSpaceColor}${period}`
+            resultColorVariables[noSpaceColor] = `$${variable}`
+            delete result[noSpaceColor]
           }
         }
         for (const color in result) {
-          if(!colorsFileResult[color]) {
+          const noSpaceColor = color.replace(/\s/g, '')
+          if(!colorsFileResult[noSpaceColor] && !resultColorVariables[noSpaceColor]) {
             const variable = createHash()
-            newColorsFileData += `$${variable}: ${color}${period}`
-            resultColorVariables[color] = `$${variable}`
-            delete result[color]
+            newColorsFileData += `$${variable}: ${noSpaceColor}${period}`
+            resultColorVariables[noSpaceColor] = `$${variable}`
+            delete result[noSpaceColor]
           }
         }
       }
       fs.writeFileSync(compileFilePath, newColorsFileData)
-      setColorVariableToFiles(resultColorVariables)
+      transformAllFilesColorToVariable(resultColorVariables)
     }
   }
 
   // 最後一部：遍歷所有 file，將顏色轉成變量
-  const setColorVariableToFiles = (resultColorVariables) => {
+  const transformAllFilesColorToVariable = (resultColorVariables) => {
     let endIndex = 0
+    // 將數據轉成顏色最長的在前
+    const flatAndSortColorsFromStringLength = colors => colors.reduce((prev, color) => typeof color === 'string' ? [...prev, color] : [...prev, ...color], []).sort((a, b) => b.length > a.length ? 1 : -1)
     cacheFile.forEach((path, index) => {
       fs.readFile(path, (err, data) => {
         let fileData = data.toString()
-        cacheFileColors[index].forEach((color) => {
-          fileData = fileData.replace(new RegExp(color, 'g'), resultColorVariables[color])
+        flatAndSortColorsFromStringLength(cacheFileColors[index]).forEach((color) => {
+          fileData = fileData.split(color).join(resultColorVariables[color.replace(/\s/g, '')])
         })
         fs.writeFile(path, fileData, err => {
           if(err) {
@@ -100,13 +104,28 @@ module.exports = (_config) => new Promise((reslove, reject) => {
         })
       })
     })
+    return reslove(true)
   }
 
   // 將遍歷到的 file 路徑及顏色緩存起來，到最後一步遍歷 file 時可以提速
   const recordCacheData = (newPath, colors) => {
     if(newPath !== compileFilePath) {
+      const setToColors = [...colors]
+      const uniqueColors = {}
+      setToColors.forEach(color => {
+        if(/rgba/.test(color) === true) {
+          const noSpaceColor = color.replace(/\s/g, '')
+          if(uniqueColors[noSpaceColor] !== undefined) {
+            uniqueColors[noSpaceColor].push(color)
+          } else {
+            uniqueColors[noSpaceColor] = [color]
+          }
+        } else {
+          uniqueColors[color] = color
+        }
+      })
       cacheFile.push(newPath)
-      cacheFileColors.push([...colors])
+      cacheFileColors.push(Object.values(uniqueColors))
     }
   }
 
@@ -120,23 +139,20 @@ module.exports = (_config) => new Promise((reslove, reject) => {
       if (txt === ':') {
         colorIndex = cur
       } else if (txt === 'r') {
-        const [color, isRgba] = getRgbaColor(input, cur)
+        const [color, isRgba] = getRgbaColor(input, cur, index => (cur = index))
         if (isRgba) {
           result[color] !== true && (result[color] = true)
           colors.add(color)
         }
       } else if (txt === '#') {
-        const color = `#${getHashColor(input, cur)}`
+        const color = `#${getHashColor(input, cur, index => (cur = index))}`
         result[color] !== true && (result[color] = true)
         colors.add(color)
       }
       cur++
     }
-    console.log(1, colors)
-    console.log(2, result)
-    return reslove(true)
     recordCacheData(path, colors)
-    ++compileCurrent === cacheFileLength && setVariableToFile()
+    ++compileCurrent === cacheFileLength && setVariableToCompileFile()
   }
 
   // 循環遍歷所有檔案，跟路徑從 rootPath 開始
