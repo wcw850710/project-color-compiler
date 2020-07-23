@@ -20,3 +20,28 @@ export default new Vuex.Store({
   actions: {},
   modules: {}
 })
+
+const _colors =
+  {
+    '#000': 'JXQjdRD8aQ',
+    '#666666': 'axQsKWnaVi',
+    '#fff': 'cbEXMoMBOu',
+    '#1c1c1c': 'pCPUnZca2Y',
+    '#999': 'zp78x0whia'
+  }
+const result = {
+  '#000': true,
+  '#777': true,
+  '#fff': true,
+  '#1c1c1c': true,
+  '#666666': true,
+  '#999': true,
+}
+const toFiles = {
+  '#000': '$JXQjdRD8aQ',
+  '#777': '$',
+  '#fff': '$cbEXMoMBOu',
+  '#1c1c1c': '$pCPUnZca2Y',
+  '#999': '$zp78x0whia',
+  '#666666': '$axQsKWnaVi'
+}

@@ -5,7 +5,7 @@ module.exports = (config) => new Promise((reslove, reject) => {
   const getColor = require("../utils/getColor")
   const recursiveDir = require("../utils/recursiveDir")
   const createHash = require('../utils/createHash')
-  const {fileExtensions, compileFile, compilePath, rootPath} = getConfig(config)
+  const {compileFilePath, rootPath} = getConfig(config)
   const result = {}
   let cacheSassFiles = []
   let cacheSassFileColors = []
@@ -14,10 +14,10 @@ module.exports = (config) => new Promise((reslove, reject) => {
 
   const readColorsFileData = () => new Promise(reslove => {
     try{
-      const data = fs.readFileSync(compilePath + compileFile)
+      const data = fs.readFileSync(compileFilePath)
       reslove(data.toString())
     }catch (err) {
-      reslove(null)
+      reslove('')
     }
   })
 
@@ -47,26 +47,28 @@ module.exports = (config) => new Promise((reslove, reject) => {
   }
 
   const setSassVariableToFile = async () => {
-    let index = 0
-    let isFirstAdd = true
     const resultColorVariables = {}
     let colorsFileData = await readColorsFileData()
-    const colorsFileResult = colorsFileData === null ? {} : compilerColorsFileData(colorsFileData)
+    const colorsFileResult = compilerColorsFileData(colorsFileData)
+    let newColorsFileData = ''
     if (Object.keys(result).length) {
-      for (const color in result) {
-        index++
-        // 先移除 commit
-        // const commit = '// ' + [...result[color]].join(', ')
-        const colorResultVariableName = colorsFileResult[color]
-        let variableName = colorResultVariableName ? '$' + colorResultVariableName : '$' + createHash()
-        colorsFileData += `${isFirstAdd ? '' : '\n'}${variableName}: ${color}`
-        isFirstAdd && (isFirstAdd = false)
-        if (colorResultVariableName) {
-          variableName = colorResultVariableName
+      for (const color in colorsFileResult) {
+        if(result[color]) {
+          const variable = colorsFileResult[color]
+          newColorsFileData += `$${variable}: ${color}\n`
+          resultColorVariables[color] = `$${variable}`
+          delete result[color]
         }
-        resultColorVariables[color] = '$' + variableName
       }
-      fs.writeFileSync(compilePath + compileFile, colorsFileData)
+      for (const color in result) {
+        if(!colorsFileResult[color]) {
+          const variable = createHash()
+          newColorsFileData += `$${variable}: ${color}\n`
+          resultColorVariables[color] = `$${variable}`
+          delete result[color]
+        }
+      }
+      fs.writeFileSync(compileFilePath, newColorsFileData)
       setColorVariableToSassFiles(resultColorVariables)
     }
   }
@@ -91,8 +93,10 @@ module.exports = (config) => new Promise((reslove, reject) => {
   }
 
   const recordCacheSassData = (newPath, colors) => {
-    cacheSassFiles.push(newPath)
-    cacheSassFileColors.push([...colors])
+    if(newPath !== compileFilePath) {
+      cacheSassFiles.push(newPath)
+      cacheSassFileColors.push([...colors])
+    }
   }
 
   const compiler = (input, newPath, fileName) => {
