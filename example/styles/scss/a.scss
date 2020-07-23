@@ -1,10 +1,15 @@
 .gg {
   color: #555;
+  background-color: rgba(#000,1);
+  border-color: rgba(#1c1c1c,0.8);
   &__g {
     color: #000;
+    background-color: rgba(0, 0, 0, .5);
+    border-color: rgba(0,0, 0,.5);
   }
 }
 
 span {
   color: #444444;
+  background-color: rgba(darken(rgba(0, 0, 0, .5)), .5);
 }

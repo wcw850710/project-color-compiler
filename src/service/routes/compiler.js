@@ -1,7 +1,8 @@
 module.exports = (_config) => new Promise((reslove, reject) => {
   const fs = require('fs')
   const getConfig = require('../utils/getConfig')
-  const getColor = require("../utils/getColor")
+  const getRgbaColor = require("../utils/getRgbaColor")
+  const getHashColor = require("../utils/getHashColor")
   const recursiveDir = require("../utils/recursiveDir")
   const createHash = require('../utils/createHash')
   const config = getConfig(_config)
@@ -118,16 +119,22 @@ module.exports = (_config) => new Promise((reslove, reject) => {
       const txt = input[cur]
       if (txt === ':') {
         colorIndex = cur
+      } else if (txt === 'r') {
+        const [color, isRgba] = getRgbaColor(input, cur)
+        if (isRgba) {
+          result[color] !== true && (result[color] = true)
+          colors.add(color)
+        }
       } else if (txt === '#') {
-        const color = getColor(input, cur)
-        result['#' + color] !== true && (result['#' + color] = true)
-        colors.add('#' + color)
+        const color = `#${getHashColor(input, cur)}`
+        result[color] !== true && (result[color] = true)
+        colors.add(color)
       }
       cur++
     }
-    // console.log(1, colors)
-    // console.log(2, result)
-    // return reslove(true)
+    console.log(1, colors)
+    console.log(2, result)
+    return reslove(true)
     recordCacheData(path, colors)
     ++compileCurrent === cacheFileLength && setVariableToFile()
   }

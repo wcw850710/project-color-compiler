@@ -14,7 +14,7 @@ export default new Vuex.Store({
         //   rootPath: "C:/Users/wcw85/desk/code/ws-projects/sass-colors-compiler/example/"
         // },
         config: {
-          fileExtensions: ["sass", "scss"],
+          fileExtensions: ["scss"],
           compileFile: ["_colors", "scss"],
           compilePath: "C:/Users/wcw85/desk/code/ws-projects/sass-colors-compiler/example/styles/scss",
           rootPath: "C:/Users/wcw85/desk/code/ws-projects/sass-colors-compiler/example/"
