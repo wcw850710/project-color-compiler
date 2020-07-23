@@ -22,9 +22,12 @@
     },
     // computed:{},
     created() {
-      this.$http.compiler(
+      // this.$http.compiler(
+      //   {config: this.$store.state.projects[0].config}
+      // ).then(res => console.log(res)).catch(err => console.error(err))
+      this.$http.getColors(
         {config: this.$store.state.projects[0].config}
-      ).then(res => console.log(res)).catch(err => console.error(err))
+      ).then(res => console.log(res.data.data)).catch(err => console.error(err))
     },
     // mounted(){},
     // beforeDestroy() {},

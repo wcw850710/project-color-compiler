@@ -5,6 +5,7 @@ module.exports = (_config) => new Promise((reslove, reject) => {
   const getHashColor = require("../utils/getHashColor")
   const recursiveDir = require("../utils/recursiveDir")
   const createHash = require('../utils/createHash')
+  const getFileColors = require('../utils/getFileColors')
   const config = getConfig(_config)
   const {fileExtensions, compileFilePath, rootPath, compileFileType} = config
   const result = {}
@@ -38,39 +39,38 @@ module.exports = (_config) => new Promise((reslove, reject) => {
   // 倒數第二步：將變量數據創建到對應的 colors file
   const setVariableToCompileFile = async () => {
     const resultColorVariables = {}
-    let colorsFileData = await readColorsFileData()
-    const colorsFileResult = compilerColorsFileData(colorsFileData)
-    let newColorsFileData = ''
+    const colorsFileData = await getFileColors(compileFilePath)
+    let colorsFileResult = ''
     if (Object.keys(result).length) {
       const isSass = fileExtensions['.sass'] === true
       const isScss = fileExtensions['.scss'] === true
       if (isSass || isScss) {
         const period = (compileFileType === 'scss' ? ';' : '') + '\n'
-        for (const color in colorsFileResult) {
+        for (const color in colorsFileData) {
           if (result[color]) {
-            const variable = colorsFileResult[color]
-            newColorsFileData += `$${variable}: ${color}${period}`
+            const { variable } = colorsFileData[color]
+            colorsFileResult += `$${variable}: ${color}${period}`
             resultColorVariables[color] = `$${variable}`
-            delete colorsFileResult[color]
+            delete colorsFileData[color]
             delete result[color]
           } else {
-            const variable = colorsFileResult[color]
-            newColorsFileData += `$${variable}: ${color}${period}`
+            const { variable } = colorsFileData[color]
+            colorsFileResult += `$${variable}: ${color}${period}`
             resultColorVariables[color] = `$${variable}`
-            delete colorsFileResult[color]
+            delete colorsFileData[color]
           }
         }
         for (const color in result) {
           const noSpaceColor = color.replace(/\s/g, '')
-          if(colorsFileResult[noSpaceColor]) {
-            const variable = colorsFileResult[noSpaceColor]
-            newColorsFileData += `$${variable}: ${noSpaceColor}${period}`
+          if(colorsFileData[noSpaceColor]) {
+            const { variable } = colorsFileData[noSpaceColor]
+            colorsFileResult += `$${variable}: ${noSpaceColor}${period}`
             resultColorVariables[noSpaceColor] = `$${variable}`
-            delete colorsFileResult[noSpaceColor]
+            delete colorsFileData[noSpaceColor]
             delete result[color]
           } else if(!resultColorVariables[noSpaceColor]) {
             const variable = createHash()
-            newColorsFileData += `$${variable}: ${noSpaceColor}${period}`
+            colorsFileResult += `$${variable}: ${noSpaceColor}${period}`
             resultColorVariables[noSpaceColor] = `$${variable}`
             delete result[color]
           } else {
@@ -78,7 +78,7 @@ module.exports = (_config) => new Promise((reslove, reject) => {
           }
         }
       }
-      fs.writeFileSync(compileFilePath, newColorsFileData)
+      fs.writeFileSync(compileFilePath, colorsFileResult)
       transformAllFilesColorToVariable(resultColorVariables)
     } else {
       return reslove(true)

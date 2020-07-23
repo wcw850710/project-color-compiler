@@ -2,7 +2,8 @@ import axios from 'axios'
 const baseUrl = '/api'
 const https = Vue => {
   const apis = {
-    'compiler': (params) => axios.post(`${baseUrl}/compiler`, params)
+    compiler: (params) => axios.post(`${baseUrl}/compiler`, params),
+    getColors: (params) => axios.post(`${baseUrl}/getColors`, params),
   }
   Vue.prototype.$http = apis
 }
