@@ -1,39 +1,41 @@
-(async () => {
+module.exports = (config) => new Promise((reslove, reject) => {
   const fs = require('fs')
-  const Config = require('./utils/getConfigData')
-  const {fileExtensions, compileFile, compilePath} = await Config.setConfig()
-  const getStyleName = require("./utils/getStyleName")
-  const getColor = require("./utils/getColor")
-  const recursiveDir = require("./utils/recursiveDir")
-  const createHash = require('./utils/createHash')
+  const getConfig = require('../utils/getConfig')
+  const getStyleName = require("../utils/getStyleName")
+  const getColor = require("../utils/getColor")
+  const recursiveDir = require("../utils/recursiveDir")
+  const createHash = require('../utils/createHash')
+  const {fileExtensions, compileFile, compilePath, rootPath} = getConfig(config)
   const result = {}
   let cacheSassFiles = []
   let cacheSassFileColors = []
   let sassFileLength = 0
   let sassCompileCurrent = 0
 
-  const readColorsFileData = () => {
-    const data = fs.readFileSync(compilePath + compileFile, (err, data) => {
-      return data
-    })
-    return data
-  }
+  const readColorsFileData = () => new Promise(reslove => {
+    try{
+      const data = fs.readFileSync(compilePath + compileFile)
+      reslove(data.toString())
+    }catch (err) {
+      reslove(null)
+    }
+  })
 
   const compilerColorsFileData = input => {
     let cur = 0
     let result = {}
-    while(cur < input.length){
+    while (cur < input.length) {
       if (input[cur] === '$') {
         let variableName = ''
         let color = ''
         while (input[++cur] !== ':') {
-          variableName+=input[cur]
+          variableName += input[cur]
         }
         while (input[++cur] !== '#') {
           continue
         }
-        while (/[A-z0-9]/.test(input[++cur])) {
-          color+=input[cur]
+        while (/[A-z0-9]/.test(input[++cur]) && input[cur] !== undefined) {
+          color += input[cur]
         }
         result['#' + color] = variableName
         cur++
@@ -44,12 +46,12 @@
     return result
   }
 
-  const setSassVariableToFile = () => {
+  const setSassVariableToFile = async () => {
     let index = 0
     let isFirstAdd = true
     const resultColorVariables = {}
-    let colorsFileData = readColorsFileData().toString()
-    const colorsFileResult = compilerColorsFileData(colorsFileData)
+    let colorsFileData = await readColorsFileData()
+    const colorsFileResult = colorsFileData === null ? {} : compilerColorsFileData(colorsFileData)
     if (Object.keys(result).length) {
       for (const color in result) {
         index++
@@ -59,7 +61,7 @@
         let variableName = colorResultVariableName ? '$' + colorResultVariableName : '$' + createHash()
         colorsFileData += `${isFirstAdd ? '' : '\n'}${variableName}: ${color}`
         isFirstAdd && (isFirstAdd = false)
-        if (colorResultVariableName){
+        if (colorResultVariableName) {
           variableName = colorResultVariableName
         }
         resultColorVariables[color] = '$' + variableName
@@ -70,13 +72,20 @@
   }
 
   const setColorVariableToSassFiles = (resultColorVariables) => {
+    let endIndex = 0
     cacheSassFiles.forEach((path, index) => {
       fs.readFile(path, (err, data) => {
         let sassFileData = data.toString()
         cacheSassFileColors[index].forEach((color) => {
           sassFileData = sassFileData.replace(new RegExp(color, 'g'), resultColorVariables[color])
         })
-        fs.writeFile(path, sassFileData, (err) => {})
+        fs.writeFile(path, sassFileData, err => {
+          if(err) {
+            reject(false)
+          }else {
+            ++endIndex === cacheSassFiles.length && reslove(true)
+          }
+        })
       })
     })
   }
@@ -106,5 +115,5 @@
     ++sassCompileCurrent === sassFileLength && setSassVariableToFile()
   }
 
-  recursiveDir('./', () => sassFileLength++, (fileName, path, data) => compiler(data, path, fileName))
-})()
+  recursiveDir(rootPath, config, () => sassFileLength++, (fileName, path, data) => compiler(data, path, fileName))
+})

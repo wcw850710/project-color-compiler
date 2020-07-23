@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon ./src/service/index.js",
+    "start:service": "nodemon ./src/service/index.js",
     "start:gui": "cd ./src/gui && yarn run serve"
   },
   "dependencies": {

@@ -21,34 +21,42 @@
       }
     },
     // computed:{},
-    // created(){},
+    created() {
+      this.$http.compiler(
+        {config: this.$store.state.projects[0].config}
+      ).then(res => console.log(res)).catch(err => console.error(err))
+    },
     // mounted(){},
     // beforeDestroy() {},
     // methods:{},
   }
 </script>
 <style lang="scss" scoped>
-  .lists{
+  .lists {
     display: flex;
     flex-direction: column;
     padding: 75px 15%;
   }
-  .list{
+
+  .list {
     width: 150px;
     height: 150px;
     border: 1px solid #000;
     position: relative;
     cursor: pointer;
-    &:hover{
-      background: rgba(0,0,0,.1);
+
+    &:hover {
+      background: rgba(0, 0, 0, .1);
     }
   }
-  .plus{
+
+  .plus {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    &::before, &::after{
+
+    &::before, &::after {
       content: '';
       position: fixed;
       left: 50%;
@@ -56,11 +64,13 @@
       transform: translate(-50%, -50%);
       background: #000;
     }
-    &::before{
+
+    &::before {
       width: 15px;
       height: 2px;
     }
-    &::after{
+
+    &::after {
       width: 2px;
       height: 15px;
     }
