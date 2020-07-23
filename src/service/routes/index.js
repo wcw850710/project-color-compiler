@@ -4,7 +4,6 @@ const compiler = require('./compiler')
 
 router.post('/compiler', async (req, res) => {
   const { config } = req.body
-  console.log(config)
   const ok = await compiler(config)
   if (ok === true) {
     res.status(200).send('顏色更新成功')

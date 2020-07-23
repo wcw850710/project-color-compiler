@@ -1,16 +1,18 @@
-module.exports = (config) => new Promise((reslove, reject) => {
+module.exports = (_config) => new Promise((reslove, reject) => {
   const fs = require('fs')
   const getConfig = require('../utils/getConfig')
   const getColor = require("../utils/getColor")
   const recursiveDir = require("../utils/recursiveDir")
   const createHash = require('../utils/createHash')
-  const {compileFilePath, rootPath} = getConfig(config)
+  const config = getConfig(_config)
+  const {compileFilePath, rootPath} = config
   const result = {}
   let cacheSassFiles = []
   let cacheSassFileColors = []
   let sassFileLength = 0
   let sassCompileCurrent = 0
 
+  // 讀取 colors file 變倒出 fileData: string
   const readColorsFileData = () => new Promise(reslove => {
     try{
       const data = fs.readFileSync(compileFilePath)
@@ -20,6 +22,7 @@ module.exports = (config) => new Promise((reslove, reject) => {
     }
   })
 
+  // 將 colors file 原數據從 string 轉換成 json
   const compilerColorsFileData = input => {
     let cur = 0
     let result = {}
@@ -45,6 +48,7 @@ module.exports = (config) => new Promise((reslove, reject) => {
     return result
   }
 
+  // 倒數第二步：將變量數據創建到對應的 colors file
   const setSassVariableToFile = async () => {
     const resultColorVariables = {}
     let colorsFileData = await readColorsFileData()
@@ -72,6 +76,7 @@ module.exports = (config) => new Promise((reslove, reject) => {
     }
   }
 
+  // 最後一部：遍歷所有 sass file，將顏色轉成變量
   const setColorVariableToSassFiles = (resultColorVariables) => {
     let endIndex = 0
     cacheSassFiles.forEach((path, index) => {
@@ -91,6 +96,7 @@ module.exports = (config) => new Promise((reslove, reject) => {
     })
   }
 
+  // 將遍歷到的 sass file 路徑及顏色緩存起來，到最後一步遍歷 sass file 時可以提速
   const recordCacheSassData = (newPath, colors) => {
     if(newPath !== compileFilePath) {
       cacheSassFiles.push(newPath)
@@ -98,6 +104,7 @@ module.exports = (config) => new Promise((reslove, reject) => {
     }
   }
 
+  // 將遍歷到的 sass fileData 轉成 Set(cache) 及 json(result) 格式，好讓後面調用
   const compiler = (input, path, fileName) => {
     let cur = 0
     let colorIndex = 0
@@ -117,5 +124,6 @@ module.exports = (config) => new Promise((reslove, reject) => {
     ++sassCompileCurrent === sassFileLength && setSassVariableToFile()
   }
 
+  // 循環遍歷所有檔案，跟路徑從 rootPath 開始
   recursiveDir(rootPath, config, () => sassFileLength++, (fileName, path, data) => compiler(data, path))
 })
