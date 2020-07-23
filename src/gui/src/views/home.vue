@@ -42,8 +42,24 @@
     // mounted(){},
     // beforeDestroy() {},
     methods: {
+      rgbToHex(r, g, b) {
+        const componentToHex = c => {
+          const hex = c.toString(16)
+          return hex.length == 1 ? "0" + hex : hex
+        }
+        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b)
+      },
+      hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : null;
+      },
       onGetFile(ev) {
-        const file = ev.target.files[0]
+        const fileInput = ev.target
+        const file = fileInput.files[0]
         const reader = new FileReader;
         reader.onload = e => {
           const result = e.target.result
@@ -77,7 +93,11 @@
                 matchColors.push(color)
               }
             }
-            this.matchColors = matchColors
+            fileInput.value = ''
+            this.matchColors = matchColors.map(rgba => {
+              const [r, g, b] = rgba.split(',')
+              return this.rgbToHex(Number(r), Number(g), Number(b))
+            })
           }
         };
         reader.readAsDataURL(file);
