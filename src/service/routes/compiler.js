@@ -45,22 +45,20 @@ module.exports = (_config) => new Promise((reslove, reject) => {
       const isSass = fileExtensions['.sass'] === true
       const isScss = fileExtensions['.scss'] === true
       if (isSass || isScss) {
-        const period = (compileFileType === 'scss' ? ';' : '') + '\n'
         for (const color in colorsFileData) {
+          const { variable, commit } = colorsFileData[color]
+          const period = (compileFileType === 'scss' ? `;` : '') + `${commit ? ` // ${commit}` : ''}\n`
+          colorsFileResult += `$${variable}: ${color}${period}`
+          resultColorVariables[color] = `$${variable}`
           if (result[color]) {
-            const { variable } = colorsFileData[color]
-            colorsFileResult += `$${variable}: ${color}${period}`
-            resultColorVariables[color] = `$${variable}`
             delete colorsFileData[color]
             delete result[color]
           } else {
-            const { variable } = colorsFileData[color]
-            colorsFileResult += `$${variable}: ${color}${period}`
-            resultColorVariables[color] = `$${variable}`
             delete colorsFileData[color]
           }
         }
         for (const color in result) {
+          const period = (compileFileType === 'scss' ? ';' : '') + '\n'
           const noSpaceColor = color.replace(/\s/g, '')
           if(colorsFileData[noSpaceColor]) {
             const { variable } = colorsFileData[noSpaceColor]
