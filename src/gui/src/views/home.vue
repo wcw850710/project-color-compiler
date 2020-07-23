@@ -7,6 +7,7 @@
     <modal title="新建專案" v-model="isModal">
       hello
     </modal>
+    <input type="file" @change="onGetFile">
   </div>
 </template>
 <script>
@@ -29,7 +30,58 @@
     },
     // mounted(){},
     // beforeDestroy() {},
-    // methods:{},
+    methods:{
+      onGetFile(ev) {
+        const file = ev.target.files[0]
+        const reader = new FileReader;
+        reader.onload = function(e) {
+          const result = e.target.result
+          const canvas = document.createElement('canvas')
+          const ctx = canvas.getContext('2d')
+          const img = new Image()
+          const rangePixels = []
+          let matchColors = new Set()
+          img.src = result
+          img.onload = () => {
+            ctx.drawImage(img, 0, 0)
+            const { width, height } = img
+            const range = 30
+            const rangeWidth = width / range
+            const rangeHeight = height / range
+            for (let i = 0; i < rangeWidth; i++) {
+              for (let j = 0; j < rangeHeight; j++) {
+                const pixels = ctx.getImageData(range * i, range * j, range, range).data
+                rangePixels.push(pixels)
+              }
+            }
+            for (let i = 0; i < rangePixels.length; i++) {
+              let prevRgba = ''
+              let total = 0
+              const allPixels = rangePixels[i]
+              for (let j = 4; j < allPixels.length; j+=4) {
+                const a = allPixels[j - 1] / 255
+                const g = allPixels[j - 2]
+                const b = allPixels[j - 3]
+                const r = allPixels[j - 4]
+                const rgba = `${r},${g},${b},${a}`
+                if(j === 4) prevRgba = rgba
+                if(prevRgba === rgba) {
+                  total += 1
+                  prevRgba = rgba
+                } else {
+                  break
+                }
+              }
+              if(total >= range * range - 1) {
+                matchColors.add(prevRgba)
+              }
+            }
+            console.log([...matchColors])
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    },
   }
 </script>
 <style lang="scss" scoped>
