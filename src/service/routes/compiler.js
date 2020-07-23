@@ -53,6 +53,11 @@ module.exports = (_config) => new Promise((reslove, reject) => {
             resultColorVariables[color] = `$${variable}`
             delete colorsFileResult[color]
             delete result[color]
+          } else {
+            const variable = colorsFileResult[color]
+            newColorsFileData += `$${variable}: ${color}${period}`
+            resultColorVariables[color] = `$${variable}`
+            delete colorsFileResult[color]
           }
         }
         for (const color in result) {
@@ -75,6 +80,8 @@ module.exports = (_config) => new Promise((reslove, reject) => {
       }
       fs.writeFileSync(compileFilePath, newColorsFileData)
       transformAllFilesColorToVariable(resultColorVariables)
+    } else {
+      return reslove(true)
     }
   }
 
