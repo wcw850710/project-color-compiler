@@ -15,36 +15,22 @@ module.exports = (_config) => new Promise((reslove, reject) => {
 
   // 讀取 colors file 變倒出 fileData: string
   const readColorsFileData = () => new Promise(reslove => {
-    try{
+    try {
       const data = fs.readFileSync(compileFilePath)
       reslove(data.toString())
-    }catch (err) {
+    } catch (err) {
       reslove('')
     }
   })
 
   // 將 colors file 原數據從 string 轉換成 json
   const compilerColorsFileData = input => {
-    let cur = 0
-    let result = {}
-    while (cur < input.length) {
-      if (input[cur] === '$') {
-        let variableName = ''
-        let color = ''
-        while (input[++cur] !== ':') {
-          variableName += input[cur]
-        }
-        while (input[++cur] !== '#') {
-          continue
-        }
-        while (/[A-z0-9]/.test(input[++cur]) && input[cur] !== undefined) {
-          color += input[cur]
-        }
-        result['#' + color] = variableName
-        cur++
-        continue
-      }
-      cur++
+    const result = {}
+    const matchVariableAndColors = input.match(/(\$[A-z0-9-_]*)|(:\s?[#|A-z0-9(,#\.)\s;^\n]*)/g)
+    for (let i = 0; i < matchVariableAndColors.length; i++) {
+      const variable = matchVariableAndColors[i].substr(1, matchVariableAndColors[i].length)
+      const color = matchVariableAndColors[++i].replace(/[:\s\n;]/g, '')
+      result[color] = variable
     }
     return result
   }
@@ -58,24 +44,32 @@ module.exports = (_config) => new Promise((reslove, reject) => {
     if (Object.keys(result).length) {
       const isSass = fileExtensions['.sass'] === true
       const isScss = fileExtensions['.scss'] === true
-      if(isSass || isScss) {
+      if (isSass || isScss) {
         const period = (compileFileType === 'scss' ? ';' : '') + '\n'
         for (const color in colorsFileResult) {
-          const noSpaceColor = color.replace(/\s/g, '')
-          if(result[noSpaceColor]) {
-            const variable = colorsFileResult[noSpaceColor]
-            newColorsFileData += `$${variable}: ${noSpaceColor}${period}`
-            resultColorVariables[noSpaceColor] = `$${variable}`
-            delete result[noSpaceColor]
+          if (result[color]) {
+            const variable = colorsFileResult[color]
+            newColorsFileData += `$${variable}: ${color}${period}`
+            resultColorVariables[color] = `$${variable}`
+            delete colorsFileResult[color]
+            delete result[color]
           }
         }
         for (const color in result) {
           const noSpaceColor = color.replace(/\s/g, '')
-          if(!colorsFileResult[noSpaceColor] && !resultColorVariables[noSpaceColor]) {
+          if(colorsFileResult[noSpaceColor]) {
+            const variable = colorsFileResult[noSpaceColor]
+            newColorsFileData += `$${variable}: ${noSpaceColor}${period}`
+            resultColorVariables[noSpaceColor] = `$${variable}`
+            delete colorsFileResult[noSpaceColor]
+            delete result[color]
+          } else if(!resultColorVariables[noSpaceColor]) {
             const variable = createHash()
             newColorsFileData += `$${variable}: ${noSpaceColor}${period}`
             resultColorVariables[noSpaceColor] = `$${variable}`
-            delete result[noSpaceColor]
+            delete result[color]
+          } else {
+            delete result[color]
           }
         }
       }
@@ -96,9 +90,9 @@ module.exports = (_config) => new Promise((reslove, reject) => {
           fileData = fileData.split(color).join(resultColorVariables[color.replace(/\s/g, '')])
         })
         fs.writeFile(path, fileData, err => {
-          if(err) {
+          if (err) {
             reject(false)
-          }else {
+          } else {
             ++endIndex === cacheFile.length && reslove(true)
           }
         })
@@ -109,13 +103,13 @@ module.exports = (_config) => new Promise((reslove, reject) => {
 
   // 將遍歷到的 file 路徑及顏色緩存起來，到最後一步遍歷 file 時可以提速
   const recordCacheData = (newPath, colors) => {
-    if(newPath !== compileFilePath) {
+    if (newPath !== compileFilePath) {
       const setToColors = [...colors]
       const uniqueColors = {}
       setToColors.forEach(color => {
-        if(/rgba/.test(color) === true) {
+        if (/rgba/.test(color) === true) {
           const noSpaceColor = color.replace(/\s/g, '')
-          if(uniqueColors[noSpaceColor] !== undefined) {
+          if (uniqueColors[noSpaceColor] !== undefined) {
             uniqueColors[noSpaceColor].push(color)
           } else {
             uniqueColors[noSpaceColor] = [color]
