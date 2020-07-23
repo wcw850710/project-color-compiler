@@ -18,7 +18,7 @@
     data() {
       return {
         projects: [],
-        isModal: false
+        isModal: false,
       }
     },
     // computed:{},
@@ -30,53 +30,43 @@
     },
     // mounted(){},
     // beforeDestroy() {},
-    methods:{
+    methods: {
       onGetFile(ev) {
         const file = ev.target.files[0]
         const reader = new FileReader;
-        reader.onload = function(e) {
+        reader.onload = e => {
           const result = e.target.result
           const canvas = document.createElement('canvas')
           const ctx = canvas.getContext('2d')
           const img = new Image()
-          const rangePixels = []
-          let matchColors = new Set()
+          const matchColors = []
           img.src = result
           img.onload = () => {
+            const {width, height} = img
+            const rangeWidth = 15
+            const rangeHeight = 15
+            const range = rangeWidth * rangeHeight
+            canvas.width = width
+            canvas.height = height
             ctx.drawImage(img, 0, 0)
-            const { width, height } = img
-            const range = 30
-            const rangeWidth = width / range
-            const rangeHeight = height / range
-            for (let i = 0; i < rangeWidth; i++) {
-              for (let j = 0; j < rangeHeight; j++) {
-                const pixels = ctx.getImageData(range * i, range * j, range, range).data
-                rangePixels.push(pixels)
-              }
-            }
-            for (let i = 0; i < rangePixels.length; i++) {
-              let prevRgba = ''
-              let total = 0
-              const allPixels = rangePixels[i]
-              for (let j = 4; j < allPixels.length; j+=4) {
-                const a = allPixels[j - 1] / 255
-                const g = allPixels[j - 2]
-                const b = allPixels[j - 3]
-                const r = allPixels[j - 4]
+            const colorJson = {}
+            for (let i = 0; i < width; i++) {
+              for (let j = 0; j < height; j++) {
+                const pixels = ctx.getImageData(i, j, 1, 1).data
+                const r = pixels[0]
+                const g = pixels[1]
+                const b = pixels[2]
+                const a = pixels[3] / 255
                 const rgba = `${r},${g},${b},${a}`
-                if(j === 4) prevRgba = rgba
-                if(prevRgba === rgba) {
-                  total += 1
-                  prevRgba = rgba
-                } else {
-                  break
-                }
-              }
-              if(total >= range * range - 1) {
-                matchColors.add(prevRgba)
+                colorJson[rgba] !== undefined ? colorJson[rgba]++ : colorJson[rgba] = 0
               }
             }
-            console.log([...matchColors])
+            for (const color in colorJson) {
+              if(colorJson[color] >= range) {
+                matchColors.push(color)
+              }
+            }
+            this.matchColors = matchColors
           }
         };
         reader.readAsDataURL(file);
