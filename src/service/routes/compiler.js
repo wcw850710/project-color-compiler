@@ -1,7 +1,6 @@
 module.exports = (config) => new Promise((reslove, reject) => {
   const fs = require('fs')
   const getConfig = require('../utils/getConfig')
-  const getStyleName = require("../utils/getStyleName")
   const getColor = require("../utils/getColor")
   const recursiveDir = require("../utils/recursiveDir")
   const createHash = require('../utils/createHash')
@@ -99,7 +98,7 @@ module.exports = (config) => new Promise((reslove, reject) => {
     }
   }
 
-  const compiler = (input, newPath, fileName) => {
+  const compiler = (input, path, fileName) => {
     let cur = 0
     let colorIndex = 0
     let colors = new Set()
@@ -109,15 +108,14 @@ module.exports = (config) => new Promise((reslove, reject) => {
         colorIndex = cur
       } else if (txt === '#') {
         const color = getColor(input, cur)
-        const style = getStyleName(input, colorIndex)
-        result['#' + color] ? result['#' + color].add(`[${fileName}]: ${style}`) : result['#' + color] = new Set([`[${fileName}]: ${style}`])
+        result['#' + color] !== true && (result['#' + color] = true)
         colors.add('#' + color)
       }
       cur++
     }
-    recordCacheSassData(newPath, colors)
+    recordCacheSassData(path, colors)
     ++sassCompileCurrent === sassFileLength && setSassVariableToFile()
   }
 
-  recursiveDir(rootPath, config, () => sassFileLength++, (fileName, path, data) => compiler(data, path, fileName))
+  recursiveDir(rootPath, config, () => sassFileLength++, (fileName, path, data) => compiler(data, path))
 })
