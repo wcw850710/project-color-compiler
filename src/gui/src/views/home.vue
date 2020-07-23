@@ -29,12 +29,15 @@
       // this.$http.getColors({config: this.$store.state.projects[0].config}).then(res => console.log(res.data.data)).catch(err => console.error(err))
 
       const colors = [
-        {variable: 'lucky', color: '#123456', commit: '幸運色'},
-        {variable: 'badguy', color: '#789101', commit: ''},
-        {variable: '', color: '#999', commit: ''}
+        {oldVariable: '', newVariable: 'lucky', color: '#000', commit: '幸運色'},
+        {oldVariable: 'badguy', newVariable: 'goodGuy', color: '#777777', commit: ''},
+        {oldVariable: '', newVariable: '', color: '#999', commit: ''}
       ]
+
       // this.$http.addColors({config: this.$store.state.projects[0].config, colors}).then(res => console.log(res.data.data)).catch(err => console.error(err))
-      this.$http.replaceColors({config: this.$store.state.projects[0].config, colors}).then(res => console.log(res.data.data)).catch(err => console.error(err))
+
+
+      // this.$http.replaceColors({config: this.$store.state.projects[0].config, colors}).then(res => console.log(res.data.data)).catch(err => console.error(err))
     },
     // mounted(){},
     // beforeDestroy() {},
