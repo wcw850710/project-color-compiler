@@ -23,7 +23,7 @@
 
     <el-dialog
       title="新增專案"
-      width="70%"
+      width="800px"
       :visible.sync="isCreateDialog"
       :close-on-click-modal="false"
     >
@@ -71,7 +71,7 @@
 
     <el-dialog
       title="設定路徑"
-      width="70%"
+      width="800px"
       :visible.sync="isPathDialog"
       :close-on-click-modal="false"
     >
