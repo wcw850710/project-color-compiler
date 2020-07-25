@@ -1,21 +1,55 @@
 <template>
   <div id="app">
-    <header>顏色轉換器 @Frank</header>
+    <header :style="{justifyContent: routeName === 'home' ? 'center' : 'flex-start'}">
+      <h1>顏色管理工具</h1>
+      <el-page-header v-if="routeName !== 'home'" @back="goBack" :content="projectName" />
+    </header>
     <router-view/>
+    <footer>@Frank</footer>
   </div>
 </template>
-
+<script>
+  export default {
+    name: 'app',
+    computed: {
+      routeName() {
+        return this.$route.name
+      },
+      projectName() {
+        return this.$route.query.name
+      }
+    },
+    methods: {
+      goBack() {
+        this.$router.push('/')
+      }
+    }
+  }
+</script>
 <style lang="scss" scoped>
-header {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  font-size: 18px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: greenyellow;
-  padding: 10px;
-}
+  #app {
+    padding-bottom: 40px;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid #DCDFE6;
+    h1 {
+      margin-right: 30px;
+      font-size: 24px;
+      font-weight: 900;
+    }
+  }
+  footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    font-size: 12px;
+  }
 </style>

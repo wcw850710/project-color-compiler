@@ -1,6 +1,46 @@
 <template>
   <div>
-    <el-page-header @back="$router.push('/')" content="详情页面">
+    <div class="create-wrap">
+      <div class="no-project-tip" v-if="projects.length === 0">還沒有專案嗎？快點擊新增吧！</div>
+      <el-button type="primary" @click="onOpenCreateDialog">新增專案</el-button>
+      <el-card v-for="(pro) in projects" :key="pro.name" shadow="hover">
+        <div class="project">
+          <div class="name">{{pro.name}}</div>
+          <div class="btns">
+            <el-button type="primary">設定</el-button>
+            <el-button type="primary">進入</el-button>
+          </div>
+        </div>
+      </el-card>
+    </div>
+
+    <el-dialog
+      title="新增專案"
+      width="70%"
+      :visible.sync="isCreateDialog"
+    >
+      <el-form :model="project" ref="ruleForm" :rules="rules" label-width="80px" class="demo-ruleForm">
+        <el-form-item label="專案名稱" prop="project-name">
+          <el-input v-model="project.name"></el-input>
+        </el-form-item>
+        <el-form-item label="查找類型" prop="file-extensions">
+          <el-input v-model="project.config.fileExtensions"></el-input>
+        </el-form-item>
+        <el-form-item label="專案路徑" prop="root-path">
+          <el-input v-model="project.config.rootPath"></el-input>
+        </el-form-item>
+        <el-form-item label="編譯路徑" prop="compile-path">
+          <el-input v-model="project.config.compilePath"></el-input>
+        </el-form-item>
+        <el-form-item label="編譯檔案" prop="compile-file">
+          <el-input v-model="project.config.compileFile"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="onCloseCreateDialog">取消</el-button>
+        <el-button type="primary" @click="onCreateProject">新增</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -10,10 +50,30 @@
     // props:{},
     data() {
       return {
-        projects: [],
+        isCreateDialog: false,
+        project: {
+          name: '',
+          config: {
+            fileExtensions: ["scss"],
+            compileFile: ["_colors", "scss"],
+            compilePath: "C:",
+            rootPath: "C:"
+          },
+        },
+        rules: {
+          'project-name': [{ required: true, message: '請輸入專案名稱', trigger: 'change' },],
+          'compile-file': [{ required: true, message: '請輸入編譯檔案', trigger: 'change' },],
+          'compile-path': [{ required: true, message: '請輸入編譯路徑', trigger: 'change' },],
+          'root-path': [{ required: true, message: '請輸入專案路徑', trigger: 'change' },],
+          'file-extensions': [{ required: true, message: '請輸入查找類型', trigger: 'change' },],
+        }
       }
     },
-    // computed:{},
+    computed: {
+      projects() {
+        return this.$store.state.projects
+      }
+    },
     created() {
       // this.$http.compiler({config: this.$store.state.projects[0].config}).then(res => console.log(res)).catch(err => console.error(err))
 
@@ -34,6 +94,25 @@
     // mounted(){},
     // beforeDestroy() {},
     methods: {
+      initProject() {
+        this.project = {
+          name: '',
+          config: {
+            fileExtensions: ["scss"],
+            compileFile: ["_colors", "scss"],
+            compilePath: "C:",
+            rootPath: "C:"
+          }
+        }
+      },
+      onOpenCreateDialog() {
+        this.isCreateDialog = true
+        this.initProject()
+      },
+      onCloseCreateDialog() {
+        this.isCreateDialog = false
+      },
+      onCreateProject() {},
       rgbToHex(r, g, b) {
         const componentToHex = c => {
           const hex = c.toString(16)
@@ -81,7 +160,7 @@
               }
             }
             for (const color in colorJson) {
-              if(colorJson[color] >= range) {
+              if (colorJson[color] >= range) {
                 matchColors.push(color)
               }
             }
@@ -98,47 +177,17 @@
   }
 </script>
 <style lang="scss" scoped>
-  .lists {
+  .create-wrap {
     display: flex;
-    flex-direction: column;
-    padding: 75px 15%;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
   }
 
-  .list {
-    width: 150px;
-    height: 150px;
-    border: 1px solid #000;
-    position: relative;
-    cursor: pointer;
-
-    &:hover {
-      background: rgba(0, 0, 0, .1);
-    }
-  }
-
-  .plus {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-
-    &::before, &::after {
-      content: '';
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      background: #000;
-    }
-
-    &::before {
-      width: 15px;
-      height: 2px;
-    }
-
-    &::after {
-      width: 2px;
-      height: 15px;
-    }
+  .no-project-tip {
+    color: #606266;
+    text-align: center;
+    margin-right: 10px;
+    font-size: 13px;
   }
 </style>
