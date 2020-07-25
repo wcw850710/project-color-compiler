@@ -21,20 +21,25 @@
       :close-on-click-modal="false"
     >
       <el-form :model="project" ref="ruleForm" :rules="rules" label-width="80px" class="demo-ruleForm">
-        <el-form-item label="專案名稱" prop="project-name">
+        <el-form-item label="專案名稱" prop="name">
           <el-input v-model="project.name"></el-input>
         </el-form-item>
-        <el-form-item label="查找類型" prop="file-extensions">
+        <el-form-item label="查找類型" prop="config.fileExtensions">
           <el-input v-model="project.config.fileExtensions"></el-input>
         </el-form-item>
-        <el-form-item label="專案路徑" prop="root-path">
-          <el-input v-model="project.config.rootPath"></el-input>
-          <el-button type="primary" @click="onOpenPathDialog(project.config.rootPath)">設置路徑</el-button>
+        <el-form-item label="專案路徑" prop="config.rootPath">
+          <div class="form-path">
+            <el-input readonly v-model="project.config.rootPath"></el-input>
+            <el-button type="primary" @click="onOpenPathDialog(project.config.rootPath, 'rootPath')">設置路徑</el-button>
+          </div>
         </el-form-item>
-        <el-form-item label="編譯路徑" prop="compile-path">
-          <el-input v-model="project.config.compilePath"></el-input>
+        <el-form-item label="編譯路徑" prop="config.compilePath">
+          <div class="form-path">
+            <el-input readonly v-model="project.config.compilePath"></el-input>
+            <el-button type="primary" @click="onOpenPathDialog(project.config.compilePath, 'compilePath')">設置路徑</el-button>
+          </div>
         </el-form-item>
-        <el-form-item label="編譯檔案" prop="compile-file">
+        <el-form-item label="編譯檔案" prop="config.compileFile">
           <el-input v-model="project.config.compileFile"></el-input>
         </el-form-item>
       </el-form>
@@ -50,13 +55,21 @@
       :visible.sync="isPathDialog"
       :close-on-click-modal="false"
     >
-      <el-input v-model="path" @input="onGetFilePath"></el-input>
+      <div class="path-edit">
+        <el-input v-model="path" disabled v-if="isEditPath"></el-input>
+        <el-input ref="r-cache-path" v-model="cachePath" v-else @change="onEditPath"></el-input>
+        <i class="el-icon-edit" @click="onEditPath"></i>
+      </div>
       <ul>
-        <li v-for="path in paths" :key="path.name" @click="onSelectPath(path)">{{path.name}}</li>
+        <li v-if="path.split('/').length && path.split('/')[1] !== '' && path !== ''" @click="onGoBackPath" class="path-list"><i class="el-icon-back"></i></li>
+        <li v-for="path in paths" :key="path.name" @click="onSelectPath(path)" class="path-list">
+          <i class="el-icon-folder" v-if="path.isDirectory === true"></i>
+          <span>{{path.name}}</span>
+        </li>
       </ul>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="onClosePathDialog">取消</el-button>
-        <el-button type="primary" @click="onCreateProject">確定</el-button>
+        <el-button @click="onCancelPath">取消</el-button>
+        <el-button type="primary" @click="onSubmitPath">確定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -71,23 +84,26 @@
         isCreateDialog: false,
         isPathDialog: false,
         isGettingPath: false,
+        isEditPath: true,
         path: '',
+        cachePath: '',
         paths: [],
+        pathSetKey: '',
         project: {
           name: '',
           config: {
             fileExtensions: ["scss"],
             compileFile: ["_colors", "scss"],
-            compilePath: "C:",
-            rootPath: "C:"
+            compilePath: "C:/",
+            rootPath: "C:/"
           },
         },
         rules: {
-          'project-name': [{ required: true, message: '請輸入專案名稱', trigger: 'change' },],
-          'compile-file': [{ required: true, message: '請輸入編譯檔案', trigger: 'change' },],
-          'compile-path': [{ required: true, message: '請輸入編譯路徑', trigger: 'change' },],
-          'root-path': [{ required: true, message: '請輸入專案路徑', trigger: 'change' },],
-          'file-extensions': [{ required: true, message: '請輸入查找類型', trigger: 'change' },],
+          'name': [{ required: true, message: '請輸入專案名稱', trigger: 'change' },],
+          'config.compileFile': [{ required: true, message: '請輸入編譯檔案', trigger: 'change' },],
+          'config.compilePath': [{ required: true, message: '請輸入編譯路徑', trigger: 'change' },],
+          'config.rootPath': [{ required: true, message: '請輸入專案路徑', trigger: 'change' },],
+          'config.fileExtensions': [{ required: true, message: '請輸入查找類型', trigger: 'change' },],
         }
       }
     },
@@ -122,8 +138,8 @@
           config: {
             fileExtensions: ["scss"],
             compileFile: ["_colors", "scss"],
-            compilePath: "C:",
-            rootPath: "C:"
+            compilePath: "C:/",
+            rootPath: "C:/"
           }
         }
       },
@@ -135,9 +151,10 @@
         this.isCreateDialog = false
       },
       onCreateProject() {},
-      async onGetFilePath(path, condition = true) {
+      async onGetFilePath(path, condition = item => item.isDirectory === true && item.name[0] !== '.') {
         if(path) {
           this.isGettingPath = true
+          this.paths = []
           try {
             const paths = (await this.$http.getFilePath({path})).data.data.filter(condition)
             this.paths = paths
@@ -149,19 +166,45 @@
           this.paths = []
         }
       },
+      onGoBackPath() {
+        const _path = this.path.split('/')
+        _path.pop()
+        const jPath = _path.join('/')
+        this.path = jPath[jPath.length - 1] === ':' ? jPath + '/' : jPath
+        this.onGetFilePath(this.path)
+      },
       onSelectPath({ name }) {
         const { path } = this
-        if(path[path.length - 1] === ':') {
+        if(path[path.length - 1] !== '/') {
           this.path += '/' + name
         } else {
           this.path += name
         }
         this.onGetFilePath(this.path)
       },
-      async onOpenPathDialog(path) {
+      onEditPath() {
+        this.isEditPath = !this.isEditPath
+        if(this.isEditPath === true){
+          this.path = this.cachePath
+          this.onGetFilePath(this.path)
+        } else {
+          this.cachePath = this.path
+          this.$nextTick(() => this.$refs['r-cache-path'].focus())
+        }
+      },
+      onCancelPath() {
+        this.isPathDialog = false
+      },
+      onSubmitPath() {
+        this.$set(this.project.config, this.pathSetKey, this.path)
+        this.isPathDialog = false
+      },
+      async onOpenPathDialog(path, key) {
         this.path = path
-        await this.onGetFilePath(path, item => item.isDirectory === true && item.name[0] !== '.')
+        await this.onGetFilePath(path)
         this.isPathDialog = true
+        this.isEditPath = true
+        this.pathSetKey = key
       },
       onClosePathDialog() {
         this.isPathDialog = false
@@ -242,5 +285,40 @@
     text-align: center;
     margin-right: 10px;
     font-size: 13px;
+  }
+
+  .form-path {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    button {
+      margin-left: 6px;
+    }
+  }
+
+  .path-edit {
+    position: relative;
+    margin-bottom: 6px;
+
+    i {
+      position: absolute;
+      right: 10px;
+      top: 9px;
+      cursor: pointer;
+    }
+  }
+
+  .path-list {
+    padding: 10px 5px;
+    border-bottom: 1px solid #DCDFE6;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    &:hover {
+      background: rgba(#DCDFE6, .2);
+    }
+    i {
+      margin-right: 6px;
+    }
   }
 </style>
