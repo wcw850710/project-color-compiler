@@ -6,6 +6,7 @@ const getFileColors = require('../utils/getFileColors')
 const getConfig = require('../utils/getConfig')
 const createHash = require('../utils/createHash')
 const recursiveDir = require('../utils/recursiveDir')
+const getFilePath = require('./getFilePath')
 
 router.post('/compiler', async (req, res) => {
   const { config } = req.body
@@ -90,6 +91,20 @@ router.post('/replaceColors', async (req, res) => {
   recursiveDir(rootPath, _config, () => cacheFileLength++, (fileName, path, data) => replaceVariables(data, path))
 })
 
-
+router.get('/getFilePath', async (req, res) => {
+  const { path: filePath } = req.query
+  const paths = await getFilePath(filePath)
+  try {
+    res.status(200).send({
+      message: '路徑獲取成功',
+      data: paths
+    })
+  }catch (err) {
+    res.status(400).send({
+      message: '找不到路徑',
+      data: []
+    })
+  }
+})
 
 module.exports = router

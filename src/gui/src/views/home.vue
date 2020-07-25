@@ -18,6 +18,7 @@
       title="新增專案"
       width="70%"
       :visible.sync="isCreateDialog"
+      :close-on-click-modal="false"
     >
       <el-form :model="project" ref="ruleForm" :rules="rules" label-width="80px" class="demo-ruleForm">
         <el-form-item label="專案名稱" prop="project-name">
@@ -28,6 +29,7 @@
         </el-form-item>
         <el-form-item label="專案路徑" prop="root-path">
           <el-input v-model="project.config.rootPath"></el-input>
+          <el-button type="primary" @click="onOpenPathDialog(project.config.rootPath)">設置路徑</el-button>
         </el-form-item>
         <el-form-item label="編譯路徑" prop="compile-path">
           <el-input v-model="project.config.compilePath"></el-input>
@@ -41,6 +43,22 @@
         <el-button type="primary" @click="onCreateProject">新增</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog
+      title="設定路徑"
+      width="70%"
+      :visible.sync="isPathDialog"
+      :close-on-click-modal="false"
+    >
+      <el-input v-model="path" @input="onGetFilePath"></el-input>
+      <ul>
+        <li v-for="path in paths" :key="path.name" @click="onSelectPath(path)">{{path.name}}</li>
+      </ul>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="onClosePathDialog">取消</el-button>
+        <el-button type="primary" @click="onCreateProject">確定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -51,6 +69,10 @@
     data() {
       return {
         isCreateDialog: false,
+        isPathDialog: false,
+        isGettingPath: false,
+        path: '',
+        paths: [],
         project: {
           name: '',
           config: {
@@ -113,6 +135,37 @@
         this.isCreateDialog = false
       },
       onCreateProject() {},
+      async onGetFilePath(path, condition = true) {
+        if(path) {
+          this.isGettingPath = true
+          try {
+            const paths = (await this.$http.getFilePath({path})).data.data.filter(condition)
+            this.paths = paths
+          } catch (err) {
+            this.paths = []
+          }
+          this.isGettingPath = false
+        }else {
+          this.paths = []
+        }
+      },
+      onSelectPath({ name }) {
+        const { path } = this
+        if(path[path.length - 1] === ':') {
+          this.path += '/' + name
+        } else {
+          this.path += name
+        }
+        this.onGetFilePath(this.path)
+      },
+      async onOpenPathDialog(path) {
+        this.path = path
+        await this.onGetFilePath(path, item => item.isDirectory === true && item.name[0] !== '.')
+        this.isPathDialog = true
+      },
+      onClosePathDialog() {
+        this.isPathDialog = false
+      },
       rgbToHex(r, g, b) {
         const componentToHex = c => {
           const hex = c.toString(16)
