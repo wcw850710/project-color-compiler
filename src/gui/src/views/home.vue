@@ -1,13 +1,6 @@
 <template>
-  <div class="lists">
-    <div class="list" @click="isModal = true">
-      <div class="plus"></div>
-    </div>
-    <div class="list" v-for="project in projects" :key="project.name">{{project.name}}</div>
-    <modal title="新建專案" v-model="isModal">
-      hello
-    </modal>
-    <input type="file" @change="onGetFile">
+  <div>
+    <el-page-header @back="$router.push('/')" content="详情页面">
   </div>
 </template>
 <script>
@@ -18,12 +11,11 @@
     data() {
       return {
         projects: [],
-        isModal: false,
       }
     },
     // computed:{},
     created() {
-      this.$http.compiler({config: this.$store.state.projects[0].config}).then(res => console.log(res)).catch(err => console.error(err))
+      // this.$http.compiler({config: this.$store.state.projects[0].config}).then(res => console.log(res)).catch(err => console.error(err))
 
 
       // this.$http.getColors({config: this.$store.state.projects[0].config}).then(res => console.log(res.data.data)).catch(err => console.error(err))
