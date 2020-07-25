@@ -79,7 +79,7 @@ module.exports = (_config) => new Promise((reslove, reject) => {
       fs.writeFileSync(compileFilePath, colorsFileResult)
       transformAllFilesColorToVariable(resultColorVariables)
     } else {
-      return reslove(true)
+      return reslove({ status: 200, message: '顏色更新成功' })
     }
   }
 
@@ -98,12 +98,12 @@ module.exports = (_config) => new Promise((reslove, reject) => {
           if (err) {
             reject(false)
           } else {
-            ++endIndex === cacheFile.length && reslove(true)
+            ++endIndex === cacheFile.length && reslove({ status: 200, message: '顏色更新成功' })
           }
         })
       })
     })
-    return reslove(true)
+    return reslove({ status: 200, message: '顏色更新成功' })
   }
 
   // 將遍歷到的 file 路徑及顏色緩存起來，到最後一步遍歷 file 時可以提速
@@ -156,4 +156,10 @@ module.exports = (_config) => new Promise((reslove, reject) => {
 
   // 循環遍歷所有檔案，跟路徑從 rootPath 開始
   recursiveDir(rootPath, config, () => cacheFileLength++, (fileName, path, data) => compiler(data, path))
+
+  setTimeout(() => {
+    if(compileCurrent === 0) {
+      reslove({ status: 400, message: '找不到檔案' })
+    }
+  }, 2000)
 })

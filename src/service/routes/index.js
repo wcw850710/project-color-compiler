@@ -9,18 +9,11 @@ const recursiveDir = require('../utils/recursiveDir')
 
 router.post('/compiler', async (req, res) => {
   const { config } = req.body
-  const ok = await compiler(config)
-  if (ok === true) {
-    res.status(200).send({
-      message: '顏色更新成功',
-      data: null
-    })
-  } else {
-    res.status(400).send({
-      message: '顏色更新失敗',
-      data: null
-    })
-  }
+  const { status, message } = await compiler(config)
+  res.status(status).send({
+    message: message,
+    data: null
+  })
 })
 
 router.post('/getColors', async (req, res) => {
