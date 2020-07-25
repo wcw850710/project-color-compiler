@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <header :style="{justifyContent: routeName === 'home' ? 'center' : 'flex-start'}">
-      <h1>顏色管理工具</h1>
+      <h1>專案顏色管理工具</h1>
       <el-page-header v-if="routeName !== 'home'" @back="goBack" :content="projectName" />
     </header>
     <router-view/>
-    <footer>@Frank</footer>
+    <footer>@Frank v0.1.0</footer>
   </div>
 </template>
 <script>
@@ -51,5 +51,6 @@
     justify-content: center;
     height: 30px;
     font-size: 12px;
+    letter-spacing: 1px;
   }
 </style>

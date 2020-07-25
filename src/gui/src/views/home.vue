@@ -1,18 +1,25 @@
 <template>
   <div>
     <div class="create-wrap">
+<!--      新增匯入&匯出按鈕-->
       <div class="no-project-tip" v-if="projects.length === 0">還沒有專案嗎？快點擊新增吧！</div>
-      <el-button type="primary" @click="onOpenCreateDialog">新增專案</el-button>
-      <el-card v-for="(pro) in projects" :key="pro.name" shadow="hover">
-        <div class="project">
-          <div class="name">{{pro.name}}</div>
-          <div class="btns">
-            <el-button type="primary">設定</el-button>
-            <el-button type="primary">進入</el-button>
-          </div>
-        </div>
-      </el-card>
+      <div class="no-project-tip" v-else>探索這些專案吧！</div>
+      <div class="btns">
+        <el-button type="primary" @click="onOpenCreateDialog" plain>匯入專案</el-button>
+        <el-button type="primary" @click="onOpenCreateDialog" plain v-if="projects.length > 0">匯出專案</el-button>
+        <el-button type="primary" @click="onOpenCreateDialog">新增專案</el-button>
+      </div>
     </div>
+
+    <el-card v-for="(pro, index) in projects" :key="pro.name" shadow="hover" class="projects">
+      <div class="project">
+        <div class="name">{{index + 1}}. {{pro.name}}</div>
+        <div class="btns">
+          <el-button type="primary" plain>設定</el-button>
+          <el-button type="primary">進入</el-button>
+        </div>
+      </div>
+    </el-card>
 
     <el-dialog
       title="新增專案"
@@ -25,7 +32,10 @@
           <el-input v-model="project.name"></el-input>
         </el-form-item>
         <el-form-item label="查找類型" prop="config.fileExtensions">
-          <el-input v-model="project.config.fileExtensions"></el-input>
+          <el-checkbox-group v-model="project.config.fileExtensions">
+            <el-checkbox label="sass"></el-checkbox>
+            <el-checkbox label="scss"></el-checkbox>
+          </el-checkbox-group>
         </el-form-item>
         <el-form-item label="專案路徑" prop="config.rootPath">
           <div class="form-path">
@@ -40,7 +50,17 @@
           </div>
         </el-form-item>
         <el-form-item label="編譯檔案" prop="config.compileFile">
-          <el-input v-model="project.config.compileFile"></el-input>
+          <div class="form-compile-file">
+            <el-input v-model="project.config.compileFile[0]"></el-input>
+            <el-select v-model="project.config.compileFile[1]" placeholder="請選擇檔案類型" class="form-compile-file__select">
+              <el-option
+                v-for="extension in ['scss', 'sass']"
+                :key="extension"
+                :label="extension"
+                :value="extension">
+              </el-option>
+            </el-select>
+          </div>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -103,7 +123,7 @@
           'config.compileFile': [{ required: true, message: '請輸入編譯檔案', trigger: 'change' },],
           'config.compilePath': [{ required: true, message: '請輸入編譯路徑', trigger: 'change' },],
           'config.rootPath': [{ required: true, message: '請輸入專案路徑', trigger: 'change' },],
-          'config.fileExtensions': [{ required: true, message: '請輸入查找類型', trigger: 'change' },],
+          'config.fileExtensions': [{ required: true, message: '請勾選查找類型', trigger: 'change' },],
         }
       }
     },
@@ -150,7 +170,10 @@
       onCloseCreateDialog() {
         this.isCreateDialog = false
       },
-      onCreateProject() {},
+      onCreateProject() {
+        this.$store.commit('ADD_PROJECT', this.project)
+        this.isCreateDialog = false
+      },
       async onGetFilePath(path, condition = item => item.isDirectory === true && item.name[0] !== '.') {
         if(path) {
           this.isGettingPath = true
@@ -273,11 +296,30 @@
   }
 </script>
 <style lang="scss" scoped>
+  .projects {
+    width: 80%;
+    max-width: 800px;
+    margin: 16px auto 0;
+  }
+  .project {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .name {
+      font-weight: 900;
+    }
+    .btns {
+      display: flex;
+    }
+  }
+
   .create-wrap {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    margin: 10px;
+    margin: 10px auto;
+    width: 80%;
+    max-width: 800px;
   }
 
   .no-project-tip {
@@ -292,6 +334,15 @@
     align-items: center;
     justify-content: flex-start;
     button {
+      margin-left: 6px;
+    }
+  }
+
+  .form-compile-file {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    &__select {
       margin-left: 6px;
     }
   }

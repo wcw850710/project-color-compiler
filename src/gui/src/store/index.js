@@ -9,7 +9,11 @@ export default new Vuex.Store({
   state: {
     projects: [],
   },
-  mutations: {},
+  mutations: {
+    ADD_PROJECT(state, project) {
+      state.projects.push(project)
+    }
+  },
   actions: {},
   modules: {}
 })
