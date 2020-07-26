@@ -5,54 +5,56 @@
       <div class="no-project-tip" v-if="projects.length === 0">還沒有專案嗎？快點擊新增吧！</div>
       <div class="no-project-tip" v-else>探索這些專案吧！</div>
       <div class="btns">
-        <el-button type="primary" @click="onOpenCreateDialog" plain>匯入專案</el-button>
-        <el-button type="primary" @click="onOpenCreateDialog" plain v-if="projects.length > 0">匯出專案</el-button>
-        <el-button type="primary" @click="onOpenCreateDialog">新增專案</el-button>
+        <el-button type="primary" @click="onOpenEditorProjectDialog" plain>匯入</el-button>
+        <el-button type="primary" @click="onExportProjects" plain v-if="projects.length > 0">匯出</el-button>
+        <el-button type="primary" @click="onOpenEditorProjectDialog">新增專案</el-button>
       </div>
     </div>
 
     <el-card v-for="(pro, index) in projects" :key="pro.name" shadow="hover" class="projects">
       <div class="project">
+        <el-button type="danger" icon="el-icon-delete" circle></el-button>
         <div class="name">{{index + 1}}. {{pro.name}}</div>
         <div class="btns">
-          <el-button type="primary" plain>設定</el-button>
+          <el-button type="primary" plain @click="onOpenEditorProjectDialog(true, pro, index)">設定</el-button>
           <el-button type="primary">進入</el-button>
         </div>
       </div>
     </el-card>
 
     <el-dialog
-      title="新增專案"
+      :title="isEditProject ? '編輯專案' : '新增專案'"
       width="800px"
-      :visible.sync="isCreateDialog"
+      :visible.sync="isEditorProjectDialog"
       :close-on-click-modal="false"
+      @close="onCloseEditorProjectDialog"
     >
-      <el-form :model="project" ref="ruleForm" :rules="rules" label-width="80px" class="demo-ruleForm">
+      <el-form :model="proj" ref="project-rule-form" :rules="rules" label-width="80px" class="demo-ruleForm">
         <el-form-item label="專案名稱" prop="name">
-          <el-input v-model="project.name"></el-input>
+          <el-input v-model="proj.name"></el-input>
         </el-form-item>
         <el-form-item label="查找類型" prop="config.fileExtensions">
-          <el-checkbox-group v-model="project.config.fileExtensions">
+          <el-checkbox-group v-model="proj.config.fileExtensions">
             <el-checkbox label="sass"></el-checkbox>
             <el-checkbox label="scss"></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="專案路徑" prop="config.rootPath">
           <div class="form-path">
-            <el-input readonly v-model="project.config.rootPath"></el-input>
-            <el-button type="primary" @click="onOpenPathDialog(project.config.rootPath, 'rootPath')">設置路徑</el-button>
+            <el-input readonly v-model="proj.config.rootPath"></el-input>
+            <el-button type="primary" @click="onOpenPathDialog(proj.config.rootPath, 'rootPath')">設置路徑</el-button>
           </div>
         </el-form-item>
         <el-form-item label="編譯路徑" prop="config.compilePath">
           <div class="form-path">
-            <el-input readonly v-model="project.config.compilePath"></el-input>
-            <el-button type="primary" @click="onOpenPathDialog(project.config.compilePath, 'compilePath')">設置路徑</el-button>
+            <el-input readonly v-model="proj.config.compilePath"></el-input>
+            <el-button type="primary" @click="onOpenPathDialog(proj.config.compilePath, 'compilePath')">設置路徑</el-button>
           </div>
         </el-form-item>
         <el-form-item label="編譯檔案" prop="config.compileFile">
           <div class="form-compile-file">
-            <el-input v-model="project.config.compileFile[0]"></el-input>
-            <el-select v-model="project.config.compileFile[1]" placeholder="請選擇檔案類型" class="form-compile-file__select">
+            <el-input v-model="proj.config.compileFile[0]"></el-input>
+            <el-select v-model="proj.config.compileFile[1]" placeholder="請選擇檔案類型" class="form-compile-file__select">
               <el-option
                 v-for="extension in ['scss', 'sass']"
                 :key="extension"
@@ -64,8 +66,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="onCloseCreateDialog">取消</el-button>
-        <el-button type="primary" @click="onCreateProject">新增</el-button>
+        <el-button @click="onCloseEditorProjectDialog">取消</el-button>
+        <el-button type="primary" @click="onSubmitProject">{{isEditProject ? '修改' : '新增'}}</el-button>
       </span>
     </el-dialog>
 
@@ -87,7 +89,7 @@
           <span>{{path.name}}</span>
         </li>
       </ul>
-      <span slot="footer" class="dialog-footer">
+      <span slot="footer" class="dialog-footer" @close="onCancelPath">
         <el-button @click="onCancelPath">取消</el-button>
         <el-button type="primary" @click="onSubmitPath">確定</el-button>
       </span>
@@ -101,10 +103,11 @@
     // props:{},
     data() {
       return {
-        isCreateDialog: false,
+        isEditorProjectDialog: false,
         isPathDialog: false,
         isGettingPath: false,
         isEditPath: true,
+        isEditProject: false,
         path: '',
         cachePath: '',
         paths: [],
@@ -118,6 +121,8 @@
             rootPath: "C:/"
           },
         },
+        cacheProject: {}, // 數據結構同 project
+        cacheProjectIndex: 0,
         rules: {
           'name': [{ required: true, message: '請輸入專案名稱', trigger: 'change' },],
           'config.compileFile': [{ required: true, message: '請輸入編譯檔案', trigger: 'change' },],
@@ -130,6 +135,13 @@
     computed: {
       projects() {
         return this.$store.state.projects
+      },
+      proj() {
+        if(this.isEditProject === true) {
+          return this.cacheProject
+        } else {
+          return this.project
+        }
       }
     },
     created() {
@@ -163,16 +175,69 @@
           }
         }
       },
-      onOpenCreateDialog() {
-        this.isCreateDialog = true
-        this.initProject()
+      async onExportProjects() {
+        try {
+          const fileName = (await this.$http.beforeDownload({
+            data: JSON.stringify(this.$store.state.projects)
+          })).data.data
+          window.open(`/api/download?fileName=${fileName}`)
+        }catch (err) {
+          this.$notify.success({
+            title: '匯出數據失敗',
+            message: '你不會知道是怎麼了'
+          })
+        }
       },
-      onCloseCreateDialog() {
-        this.isCreateDialog = false
+      onOpenEditorProjectDialog(isEdit = false, project, index) {
+        this.resetProjectRuleForm()
+        if(isEdit === true) {
+          this.isEditorProjectDialog = true
+          this.isEditProject = true
+          this.cacheProjectIndex = index
+          this.cacheProject = JSON.parse(JSON.stringify(project))
+        } else {
+          this.isEditorProjectDialog = true
+          this.initProject()
+        }
       },
-      onCreateProject() {
-        this.$store.commit('ADD_PROJECT', this.project)
-        this.isCreateDialog = false
+      onCloseEditorProjectDialog() {
+        if(this.isEditProject === true) {
+          this.isEditProject = false
+        }
+        this.isEditorProjectDialog = false
+      },
+      onSubmitProject() {
+        this.$refs['project-rule-form'].validate((valid) => {
+          if (valid) {
+            if(this.isEditProject === true) {
+              this.isEditProject = false
+              this.$store.commit('SET_PROJECT', {
+                project: this.cacheProject,
+                index: this.cacheProjectIndex,
+              })
+              this.$notify.success({
+                title: '編輯專案成功',
+                message: '聰明的選擇'
+              })
+            }else {
+              this.$store.commit('ADD_PROJECT', this.project)
+              this.$notify.success({
+                title: '新增專案成功',
+                message: '聰明的選擇'
+              })
+            }
+            this.isEditorProjectDialog = false
+          } else {
+            this.$notify.error({
+              title: '該填的都填',
+              message: '你應該乖乖的'
+            })
+            return false;
+          }
+        })
+      },
+      resetProjectRuleForm() {
+        this.$nextTick(() => this.$refs['project-rule-form'].resetFields())
       },
       async onGetFilePath(path, condition = item => item.isDirectory === true && item.name[0] !== '.') {
         if(path) {
@@ -228,9 +293,6 @@
         this.isPathDialog = true
         this.isEditPath = true
         this.pathSetKey = key
-      },
-      onClosePathDialog() {
-        this.isPathDialog = false
       },
       rgbToHex(r, g, b) {
         const componentToHex = c => {
@@ -304,9 +366,11 @@
   .project {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     .name {
       font-weight: 900;
+      flex: 1;
+      padding: 0 10px;
     }
     .btns {
       display: flex;

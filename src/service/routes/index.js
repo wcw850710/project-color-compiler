@@ -7,6 +7,7 @@ const getConfig = require('../utils/getConfig')
 const createHash = require('../utils/createHash')
 const recursiveDir = require('../utils/recursiveDir')
 const getFilePath = require('./getFilePath')
+const downloadProjects = require('./downloadProjects')
 
 router.post('/compiler', async (req, res) => {
   const { config } = req.body
@@ -106,5 +107,9 @@ router.get('/getFilePath', async (req, res) => {
     })
   }
 })
+
+// TODO 過濾顏色 api, download 專案 api
+router.post('/beforeDownload', downloadProjects.before)
+router.get('/download', downloadProjects.download)
 
 module.exports = router

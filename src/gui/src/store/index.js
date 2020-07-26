@@ -12,7 +12,10 @@ export default new Vuex.Store({
   mutations: {
     ADD_PROJECT(state, project) {
       state.projects.push(project)
-    }
+    },
+    SET_PROJECT(state, {project, index}) {
+      state.projects[index] = project
+    },
   },
   actions: {},
   modules: {}

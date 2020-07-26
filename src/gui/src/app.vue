@@ -5,12 +5,25 @@
       <el-page-header v-if="routeName !== 'home'" @back="goBack" :content="projectName" />
     </header>
     <router-view/>
-    <footer>@Frank v0.1.0</footer>
+    <footer>@Frank<span @click="isReportDialog = true">v0.0.0</span></footer>
+
+    <el-dialog
+      title="更新紀錄 v0.0.0"
+      width="400px"
+      :visible.sync="isReportDialog"
+    >
+      無
+    </el-dialog>
   </div>
 </template>
 <script>
   export default {
     name: 'app',
+    data(){
+      return {
+        isReportDialog: false
+      }
+    },
     computed: {
       routeName() {
         return this.$route.name
@@ -52,5 +65,11 @@
     height: 30px;
     font-size: 12px;
     letter-spacing: 1px;
+    span {
+      text-decoration: underline;
+      margin-left: 8px;
+      display: inline-block;
+      cursor: pointer;
+    }
   }
 </style>

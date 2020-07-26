@@ -7,6 +7,7 @@ const https = Vue => {
     addColors: (params) => axios.post(`${baseUrl}/addColors`, params),
     replaceColors: (params) => axios.post(`${baseUrl}/replaceColors`, params),
     getFilePath: (params) => axios.get(`${baseUrl}/getFilePath`, {params}),
+    beforeDownload: (params) => axios.post(`${baseUrl}/beforeDownload`, params),
   }
   Vue.prototype.$http = apis
 }
