@@ -2,7 +2,7 @@
   <div id="app">
     <header :style="{justifyContent: routeName === 'home' ? 'center' : 'flex-start'}">
       <h1>專案顏色管理工具</h1>
-      <el-page-header v-if="routeName !== 'home'" @back="goBack" :content="projectName" />
+      <el-page-header v-if="routeName === 'project'" @back="goBack" :content="projectName" />
     </header>
     <router-view/>
     <footer>@Frank<span @click="isReportDialog = true">v0.0.0</span></footer>
@@ -29,7 +29,7 @@
         return this.$route.name
       },
       projectName() {
-        return this.$route.query.name
+        return this.$store.state.projects[this.$route.params.index].name
       }
     },
     methods: {

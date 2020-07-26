@@ -13,11 +13,11 @@
 
     <el-card v-for="(pro, index) in projects" :key="pro.name" shadow="hover" class="projects">
       <div class="project">
-        <el-button type="danger" icon="el-icon-delete" circle></el-button>
+        <el-button type="danger" icon="el-icon-delete" circle @click="onDeleteProject(index)"></el-button>
         <div class="name">{{index + 1}}. {{pro.name}}</div>
         <div class="btns">
           <el-button type="primary" plain @click="onOpenEditorProjectDialog(true, pro, index)">設定</el-button>
-          <el-button type="primary">進入</el-button>
+          <el-button type="primary" @click="onEnterProject(index)">進入</el-button>
         </div>
       </div>
     </el-card>
@@ -189,6 +189,12 @@
     // mounted(){},
     // beforeDestroy() {},
     methods: {
+      onDeleteProject(index){
+        this.$store.commit('REMOVE_PROJECT', index)
+      },
+      onEnterProject(index){
+        this.$router.push(`project/${index}`)
+      },
       onOpenImportDialog(){
         this.isImportDialog = true
       },

@@ -18,6 +18,9 @@ export default new Vuex.Store({
     },
     SET_PROJECTS(state, projects) {
       state.projects = projects
+    },
+    REMOVE_PROJECT(state, index){
+      state.projects.splice(index, 1)
     }
   },
   actions: {},

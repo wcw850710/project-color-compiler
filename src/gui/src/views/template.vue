@@ -3,7 +3,7 @@
 </template>
 <script>
 export default {
-  name: 'home',
+  name: 'template',
   // model: { value: 'value', event: 'update' },
   // props:{},
   // data() {
