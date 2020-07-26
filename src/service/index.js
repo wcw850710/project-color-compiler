@@ -1,10 +1,16 @@
 const express = require('express');
 const app = express();
-const path = require('path')
 const router = require('./routes')
+const bodyParser = require('body-parser')
+const multer = require('multer');
+const upload = multer();
 
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+
+// for parsing multipart/form-data
+app.use(upload.single('file'));
+
 app.use('/', router)
 
 app.listen(4200, function () {

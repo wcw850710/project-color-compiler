@@ -5,7 +5,7 @@
       <div class="no-project-tip" v-if="projects.length === 0">還沒有專案嗎？快點擊新增吧！</div>
       <div class="no-project-tip" v-else>探索這些專案吧！</div>
       <div class="btns">
-        <el-button type="primary" @click="onOpenEditorProjectDialog" plain>匯入</el-button>
+        <el-button type="primary" @click="onOpenImportDialog" plain>匯入</el-button>
         <el-button type="primary" @click="onExportProjects" plain v-if="projects.length > 0">匯出</el-button>
         <el-button type="primary" @click="onOpenEditorProjectDialog">新增專案</el-button>
       </div>
@@ -94,6 +94,29 @@
         <el-button type="primary" @click="onSubmitPath">確定</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog
+        title="匯入專案"
+        width="800px"
+        :visible.sync="isImportDialog"
+        :close-on-click-modal="false"
+    >
+      <el-upload
+          class="upload-demo"
+          action="hello upload"
+          :show-file-list="false"
+          :before-upload="onImportProjectJson"
+          v-if="impoartProjects === null"
+      >
+        <el-button size="small" type="primary">點擊上傳</el-button>
+      </el-upload>
+      <span v-else>請選擇要覆蓋還是新增</span>
+      <span slot="footer" class="dialog-footer" @close="onCancelPath" v-if="impoartProjects !== null">
+        <el-button @click="onCancelPath">取消</el-button>
+        <el-button type="primary" @click="onSubmitPath" plain>新增</el-button>
+        <el-button type="primary" @click="onSubmitPath">覆蓋</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -108,10 +131,12 @@
         isGettingPath: false,
         isEditPath: true,
         isEditProject: false,
+        isImportDialog: false,
         path: '',
         cachePath: '',
         paths: [],
         pathSetKey: '',
+        impoartProjects: null, // []
         project: {
           name: '',
           config: {
@@ -129,7 +154,7 @@
           'config.compilePath': [{ required: true, message: '請輸入編譯路徑', trigger: 'change' },],
           'config.rootPath': [{ required: true, message: '請輸入專案路徑', trigger: 'change' },],
           'config.fileExtensions': [{ required: true, message: '請勾選查找類型', trigger: 'change' },],
-        }
+        },
       }
     },
     computed: {
@@ -164,6 +189,41 @@
     // mounted(){},
     // beforeDestroy() {},
     methods: {
+      onOpenImportDialog(){
+        this.isImportDialog = true
+      },
+      async onImportProjectJson(file) {
+        const { type } = file
+        if(type !== 'application/json') {
+          this.$notify.success({
+            title: '僅接受 json 檔案',
+            message: '下次給我注意一點'
+          })
+        } else {
+          const fd = new FormData()
+          fd.append('file', file)
+          const projects = (await this.$http.importProject(fd)).data.data
+          try {
+            projects.forEach(({ name, config }) => {
+              if(typeof name !== 'string'
+              || Object.keys(config) < 4
+              || !config.fileExtensions.every(extension => typeof extension === 'string')
+              || !config.compileFile.every(file => typeof file === 'string')
+              || typeof config.compilePath !== 'string'
+              || typeof config.rootPath !== 'string') {
+                throw new Error('???')
+              }
+            })
+            this.impoartProjects = projects
+          }catch (err) {
+            this.$notify.success({
+              title: '資料格式錯誤',
+              message: '下次給我注意一點'
+            })
+          }
+        }
+        return false
+      },
       initProject() {
         this.project = {
           name: '',
