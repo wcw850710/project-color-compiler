@@ -106,15 +106,15 @@
           action="hello upload"
           :show-file-list="false"
           :before-upload="onImportProjectJson"
-          v-if="impoartProjects === null"
+          v-if="cacheImpoartProjects === null"
       >
         <el-button size="small" type="primary">點擊上傳</el-button>
       </el-upload>
-      <span v-else>請選擇要覆蓋還是新增</span>
-      <span slot="footer" class="dialog-footer" @close="onCancelPath" v-if="impoartProjects !== null">
-        <el-button @click="onCancelPath">取消</el-button>
-        <el-button type="primary" @click="onSubmitPath" plain>新增</el-button>
-        <el-button type="primary" @click="onSubmitPath">覆蓋</el-button>
+      <span v-else>請選擇要 "新增" 還是 "覆蓋"</span>
+      <span slot="footer" class="dialog-footer" @close="onCancelImport">
+        <el-button @click="onCancelImport">取消</el-button>
+        <el-button v-if="cacheImpoartProjects !== null" type="primary" @click="onImportWithNew" plain>新增</el-button>
+        <el-button v-if="cacheImpoartProjects !== null" type="primary" @click="onImportWithCover">覆蓋</el-button>
       </span>
     </el-dialog>
   </div>
@@ -136,7 +136,7 @@
         cachePath: '',
         paths: [],
         pathSetKey: '',
-        impoartProjects: null, // []
+        cacheImpoartProjects: null, // []
         project: {
           name: '',
           config: {
@@ -192,6 +192,28 @@
       onOpenImportDialog(){
         this.isImportDialog = true
       },
+      onCancelImport(){
+        this.isImportDialog = false
+        this.cacheImpoartProjects = null
+      },
+      onImportWithNew(){
+        this.cacheImpoartProjects.forEach(pro => {
+          !this.projects.find(_pro => _pro.name === pro.name) && this.$store.commit('ADD_PROJECT', pro)
+        })
+        this.$notify.success({
+          title: '新增專案成功',
+          message: '敏銳的選擇'
+        })
+        this.onCancelImport()
+      },
+      onImportWithCover(){
+        this.$store.commit('SET_PROJECTS', this.cacheImpoartProjects)
+        this.$notify.success({
+          title: '覆蓋專案成功',
+          message: '機智的選擇'
+        })
+        this.onCancelImport()
+      },
       async onImportProjectJson(file) {
         const { type } = file
         if(type !== 'application/json') {
@@ -214,7 +236,7 @@
                 throw new Error('???')
               }
             })
-            this.impoartProjects = projects
+            this.cacheImpoartProjects = projects
           }catch (err) {
             this.$notify.success({
               title: '資料格式錯誤',
@@ -283,7 +305,7 @@
               this.$store.commit('ADD_PROJECT', this.project)
               this.$notify.success({
                 title: '新增專案成功',
-                message: '聰明的選擇'
+                message: '理智的選擇'
               })
             }
             this.isEditorProjectDialog = false

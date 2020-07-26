@@ -16,6 +16,9 @@ export default new Vuex.Store({
     SET_PROJECT(state, {project, index}) {
       state.projects[index] = project
     },
+    SET_PROJECTS(state, projects) {
+      state.projects = projects
+    }
   },
   actions: {},
   modules: {}
