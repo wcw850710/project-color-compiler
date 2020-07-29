@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="create-wrap">
-<!--      新增匯入&匯出按鈕-->
       <div class="no-project-tip" v-if="projects.length === 0">還沒有專案嗎？快點擊新增吧！</div>
       <div class="no-project-tip" v-else>探索這些專案吧！</div>
       <div class="btns">
@@ -13,7 +12,16 @@
 
     <el-card v-for="(pro, index) in projects" :key="pro.name" shadow="hover" class="projects">
       <div class="project">
-        <el-button type="danger" icon="el-icon-delete" circle @click="onDeleteProject(index)"></el-button>
+        <el-popconfirm
+          confirmButtonText='是'
+          cancelButtonText='否'
+          icon="el-icon-info"
+          iconColor="red"
+          title="確定刪除此專案嗎？"
+          @onConfirm="onDeleteProject(index)"
+        >
+          <el-button slot="reference" type="danger" icon="el-icon-delete" circle></el-button>
+        </el-popconfirm>
         <div class="name">{{index + 1}}. {{pro.name}}</div>
         <div class="btns">
           <el-button type="primary" plain @click="onOpenEditorProjectDialog(true, pro, index)">設定</el-button>
@@ -63,6 +71,10 @@
               </el-option>
             </el-select>
           </div>
+        </el-form-item>
+        <el-form-item label="自動導入" prop="config.isAutoImport">
+          <el-radio v-model="proj.config.isAutoImport" :label="true">是</el-radio>
+          <el-radio v-model="proj.config.isAutoImport" :label="false">否</el-radio>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -145,7 +157,8 @@
             fileExtensions: ["scss"],
             compileFile: ["_colors", "scss"],
             compilePath: "C:/",
-            rootPath: "C:/"
+            rootPath: "C:/",
+            isAutoImport: false,
           },
         },
         cacheProject: {}, // 數據結構同 project
@@ -156,6 +169,7 @@
           'config.compilePath': [{ required: true, message: '請輸入編譯路徑', trigger: 'change' },],
           'config.rootPath': [{ required: true, message: '請輸入專案路徑', trigger: 'change' },],
           'config.fileExtensions': [{ required: true, message: '請勾選查找類型', trigger: 'change' },],
+          'config.isAutoImport': [{ required: true, message: '請選擇是否自動導入', trigger: 'change' },],
         },
       }
     },
@@ -245,7 +259,8 @@
             fileExtensions: ["scss"],
             compileFile: ["_colors", "scss"],
             compilePath: "C:/",
-            rootPath: "C:/"
+            rootPath: "C:/",
+            isAutoImport: false
           }
         }
       },
@@ -311,7 +326,7 @@
         })
       },
       resetProjectRuleForm() {
-        this.$nextTick(() => this.$refs['project-rule-form'].resetFields())
+        this.$nextTick(() => this.$refs['project-rule-form'] && this.$refs['project-rule-form'].resetFields())
       },
       async onGetFilePath(path, condition = item => item.isDirectory === true && item.name[0] !== '.') {
         if(path) {
