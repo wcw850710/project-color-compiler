@@ -111,7 +111,7 @@ router.get('/getFilePath', async (req, res) => {
 router.post('/beforeDownload', downloadProjects.before)
 router.get('/download', downloadProjects.download)
 
-// TODO 過濾顏色 api, download 專案 api
+// TODO 過濾顏色 api
 router.post('/importProject', (req, res) => {
   const { buffer } = req.file
   const data = JSON.parse(buffer.toString())

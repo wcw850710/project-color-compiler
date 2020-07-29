@@ -4,8 +4,8 @@
       <div class="no-project-tip" v-if="projects.length === 0">還沒有專案嗎？快點擊新增吧！</div>
       <div class="no-project-tip" v-else>探索這些專案吧！</div>
       <div class="btns">
-        <el-button type="primary" @click="onOpenImportDialog" plain>匯入</el-button>
-        <el-button type="primary" @click="onExportProjects" plain v-if="projects.length > 0">匯出</el-button>
+        <el-button type="default" @click="onOpenImportDialog" plain>匯入</el-button>
+        <el-button type="default" @click="onExportProjects" plain v-if="projects.length > 0">匯出</el-button>
         <el-button type="primary" @click="onOpenEditorProjectDialog">新增專案</el-button>
       </div>
     </div>
@@ -22,10 +22,14 @@
         >
           <el-button slot="reference" type="danger" icon="el-icon-delete" circle></el-button>
         </el-popconfirm>
+        <el-button style="margin-left: 4px;" type="default" icon="el-icon-setting" circle @click="onOpenEditorProjectDialog(true, pro, index)"></el-button>
         <div class="name">{{index + 1}}. {{pro.name}}</div>
         <div class="btns">
-          <el-button type="primary" plain @click="onOpenEditorProjectDialog(true, pro, index)">設定</el-button>
-          <el-button type="primary" @click="onEnterProject(index)">進入</el-button>
+          <el-button type="default" @click="onTranslateVariables(index)">導入顏色</el-button>
+          <el-button type="default" @click="onTranslateVariables(index)">移除導入</el-button>
+          <el-button type="default" @click="onTranslateVariables(index)">顏色過濾</el-button>
+          <el-button type="default" @click="onTranslateVariables(index)">轉換變量</el-button>
+          <el-button type="default" @click="onTranslateVariables(index)">交叉編譯</el-button>
         </div>
       </div>
     </el-card>
@@ -45,6 +49,8 @@
           <el-checkbox-group v-model="proj.config.fileExtensions">
             <el-checkbox label="sass"></el-checkbox>
             <el-checkbox label="scss"></el-checkbox>
+            <el-checkbox label="vue" disabled></el-checkbox>
+            <el-checkbox label="js" disabled></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="專案路徑" prop="config.rootPath">
@@ -59,15 +65,17 @@
             <el-button type="primary" @click="onOpenPathDialog(proj.config.compilePath, 'compilePath')">設置路徑</el-button>
           </div>
         </el-form-item>
-        <el-form-item label="編譯檔案" prop="config.compileFile">
+        <el-form-item label="編譯檔案" prop="config.compileFile[0]">
           <div class="form-compile-file">
             <el-input v-model="proj.config.compileFile[0]"></el-input>
             <el-select v-model="proj.config.compileFile[1]" placeholder="請選擇檔案類型" class="form-compile-file__select">
               <el-option
-                v-for="extension in ['scss', 'sass']"
+                v-for="extension in ['scss', 'sass', 'js']"
                 :key="extension"
                 :label="extension"
-                :value="extension">
+                :value="extension"
+                :disabled="extension === 'js'"
+              >
               </el-option>
             </el-select>
           </div>
@@ -166,7 +174,7 @@
         rules: {
           'name': [{ required: true, message: '請輸入專案名稱', trigger: 'change' },],
           'config.compileFile': [{ required: true, message: '請輸入編譯檔案', trigger: 'change' },],
-          'config.compilePath': [{ required: true, message: '請輸入編譯路徑', trigger: 'change' },],
+          'config.compileFile[0]': [{ required: true, message: '請輸入編譯路徑', trigger: 'change' },],
           'config.rootPath': [{ required: true, message: '請輸入專案路徑', trigger: 'change' },],
           'config.fileExtensions': [{ required: true, message: '請勾選查找類型', trigger: 'change' },],
           'config.isAutoImport': [{ required: true, message: '請選擇是否自動導入', trigger: 'change' },],
@@ -189,11 +197,11 @@
     // mounted(){},
     // beforeDestroy() {},
     methods: {
+      onTranslateVariables(index){
+
+      },
       onDeleteProject(index){
         this.$store.commit('REMOVE_PROJECT', index)
-      },
-      onEnterProject(index){
-        this.$router.push(`project/${index}`)
       },
       onOpenImportDialog(){
         this.isImportDialog = true
