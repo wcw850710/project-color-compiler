@@ -173,8 +173,8 @@
         cacheProjectIndex: 0,
         rules: {
           'name': [{ required: true, message: '請輸入專案名稱', trigger: 'change' },],
-          'config.compileFile': [{ required: true, message: '請輸入編譯檔案', trigger: 'change' },],
-          'config.compileFile[0]': [{ required: true, message: '請輸入編譯路徑', trigger: 'change' },],
+          'config.compileFile[0]': [{ required: true, message: '請輸入編譯檔案', trigger: 'change' },],
+          'config.compilePath': [{ required: true, message: '請輸入編譯路徑', trigger: 'change' },],
           'config.rootPath': [{ required: true, message: '請輸入專案路徑', trigger: 'change' },],
           'config.fileExtensions': [{ required: true, message: '請勾選查找類型', trigger: 'change' },],
           'config.isAutoImport': [{ required: true, message: '請選擇是否自動導入', trigger: 'change' },],
@@ -193,7 +193,101 @@
         }
       }
     },
-    // created() {},
+    created() {
+      const aaaa = `
+        @import './_color';
+        .a {
+          color: red;
+        }
+      `
+      const fileName = '_color'
+      const isImportColor = new RegExp(`@import\\s?['"]+.*${fileName}(\\.s[ac]ss)?['"]+[;\\s]*$`, 'gm').test(aaaa)
+      console.log(isImportColor)
+
+      const colorPath = 'C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\_color.sass'
+      const path1 = 'C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\views\\a.sass'
+      const path2 = 'C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\b.sass'
+      const path3 = 'C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\c.sass'
+      const path4 = 'C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\haha\\jojo\\_color.sass'
+
+      const colorPathSp = colorPath.split('\\')
+      colorPathSp.pop()
+      const path1Sp = path1.split('\\')
+      path1Sp.pop()
+      const path2Sp = path2.split('\\')
+      path2Sp.pop()
+      const path3Sp = path3.split('\\')
+      path3Sp.pop()
+      const path4Sp = path4.split('\\')
+      path4Sp.pop()
+
+      const addPath = (sourcePath) => {
+        const colorLen = colorPathSp.length
+        const filterPath = sourcePath.filter((path, index) => colorPathSp[index] === path)
+        const filterLen = filterPath.length
+        const sourceLen = sourcePath.length
+        let resultPath = ``
+        // console.log('colorPathSp', colorPathSp,
+        //   'sourcePath', sourcePath,
+        //   'filterPath', filterPath,)
+        if(filterLen < colorLen && sourceLen > filterLen) {
+          // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\_color.sass
+          // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\views\\a.sass
+          // ../assets/_color
+          // 路徑在 color 之後且不同資料結構
+          const minusLen = sourceLen - filterLen
+          let path = ``
+          for (let i = 0; i < minusLen; i++) {
+            path += '../'
+          }
+          const minusLen2 = colorLen - filterLen
+          const compSourceLen = colorLen - minusLen2
+          let path2 = ``
+          for (let i = 0; i < minusLen2; i++) {
+            const _path = colorPathSp[compSourceLen + i]
+            path += _path + '/'
+          }
+          resultPath = `${path}${path2}_color`
+        } else if(filterLen + colorLen + sourceLen === sourceLen * 3) {
+          // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\_color.sass
+          // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\a.sass
+          // ./_color
+          // 同層的
+          resultPath = `./_color`
+        } else if(filterLen < colorLen && sourceLen === filterLen) {
+          // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\_color.sass
+          // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\c.sass
+          // ./src/assets/_color
+          // 路徑在 color 之後且同資料結構
+          const minusLen = colorLen - sourceLen
+          const compSourceLen = colorLen - minusLen
+          let path = ``
+          for (let i = 0; i < minusLen; i++) {
+            const _path = colorPathSp[compSourceLen + i]
+            path += _path + '/'
+          }
+          resultPath = `./${path}_color`
+        } else if(sourceLen > colorLen) {
+          // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\_color.sass
+          // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\haha\\jojo\\_color.sass
+          // ../../_color
+          // 超過 color 的資料夾
+          const minusLen = sourceLen - colorLen
+          const compSourceLen = sourceLen - minusLen
+          let path = ``
+          for (let i = 0; i < minusLen; i++) {
+            path += '../'
+          }
+          resultPath = `${path}_color`
+        }
+        return resultPath
+      }
+      const importPath1 = addPath(path1Sp)
+      const importPath2 = addPath(path2Sp)
+      const importPath3 = addPath(path3Sp)
+      const importPath4 = addPath(path4Sp)
+      console.log(importPath1, importPath2, importPath3, importPath4)
+    },
     // mounted(){},
     // beforeDestroy() {},
     methods: {
