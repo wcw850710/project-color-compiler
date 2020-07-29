@@ -65,6 +65,7 @@
     height: 30px;
     font-size: 12px;
     letter-spacing: 1px;
+    z-index: 1001;
     span {
       text-decoration: underline;
       margin-left: 8px;
