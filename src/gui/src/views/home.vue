@@ -76,6 +76,7 @@
       width="800px"
       :visible.sync="isPathDialog"
       :close-on-click-modal="false"
+      @close="onCancelPath"
     >
       <div class="path-edit">
         <el-input v-model="path" disabled v-if="isEditPath"></el-input>
@@ -96,10 +97,11 @@
     </el-dialog>
 
     <el-dialog
-        title="匯入專案"
-        width="800px"
-        :visible.sync="isImportDialog"
-        :close-on-click-modal="false"
+      title="匯入專案"
+      width="800px"
+      :visible.sync="isImportDialog"
+      :close-on-click-modal="false"
+      @close="onCancelImport"
     >
       <el-upload
           class="upload-demo"
@@ -111,7 +113,7 @@
         <el-button size="small" type="primary">點擊上傳</el-button>
       </el-upload>
       <span v-else>請選擇要 "新增" 還是 "覆蓋"</span>
-      <span slot="footer" class="dialog-footer" @close="onCancelImport">
+      <span slot="footer" class="dialog-footer">
         <el-button @click="onCancelImport">取消</el-button>
         <el-button v-if="cacheImpoartProjects !== null" type="primary" @click="onImportWithNew" plain>新增</el-button>
         <el-button v-if="cacheImpoartProjects !== null" type="primary" @click="onImportWithCover">覆蓋</el-button>
