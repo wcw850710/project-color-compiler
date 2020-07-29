@@ -109,6 +109,7 @@ export default {
       console.log(this.current)
     },
   }
+}
 </script>
 <style lang="scss" scoped>
 .project {
