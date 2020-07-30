@@ -649,6 +649,9 @@
   .night-default-btn--disabled {
     color: #C0C4CC;
     background-color: transparent;
+    &:hover {
+      background-color: rgba(#fff, .2);
+    }
   }
   
 
