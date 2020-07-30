@@ -237,25 +237,7 @@
         }
       }
     },
-    created() {
-      const matchVueStartStyleTag = /^\s*<\s*style\s*lang\s*=\s*['"]s[ca]ss['"]\s*(scoped|\s*)*>+\s*$|^\s*<\s*style\s*(scoped|\s*)*lang\s*=\s*['"]s[ca]ss['"]\s*>\s*$/m
-      const matchVueEndStyleTag = /^\s*<\s*\/\s*style\s*>\s*$/m
-      const testValue = `
-        123
-        4565664564564654
-        <style lang="scss" scoped>
-        .a { color: #000; }
-        </style>
-      `
-      const styleTagStartIndex = testValue.search(matchVueStartStyleTag)
-      const styleTagEndIndex = testValue.search(matchVueEndStyleTag)
-      console.log(styleTagStartIndex, styleTagEndIndex)
-      console.log(testValue,  )
-      console.log(testValue.substring(styleTagStartIndex, styleTagEndIndex),)
-      console.log(`${testValue.substring(styleTagStartIndex, 0)}<style lang="scss" scoped>
-        .a { color: $#@!FEW; }
-        ${testValue.substring(styleTagEndIndex)}`)
-    },
+    // created() {},
     // mounted(){},
     // beforeDestroy() {},
     methods: {
