@@ -1,4 +1,4 @@
-module.exports = (colorPath, {compileFilePath, compileFileName}) => {
+module.exports = (colorPath, {compileFilePath, compileFileName, compileFileType}) => {
   const colorPathSp = colorPath.split(/[\\\/]/)
   colorPathSp.pop()
   const compilePathSp = compileFilePath.split(/[\\\/]/)
@@ -30,13 +30,13 @@ module.exports = (colorPath, {compileFilePath, compileFileName}) => {
         const _path = colorPathSp[compSourceLen + i]
         path += _path + '/'
       }
-      resultPath = `${path}${path2}${compileFileName}`
+      resultPath = `${path}${path2}${compileFileName}.${compileFileType}`
     } else if(filterLen + colorLen + sourceLen === sourceLen * 3) {
       // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\_color.sass
       // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\a.sass
       // ./_color
       // 同層的
-      resultPath = `./${compileFileName}`
+      resultPath = `./${compileFileName}.${compileFileType}`
     } else if(filterLen < colorLen && sourceLen === filterLen) {
       // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\_color.sass
       // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\c.sass
@@ -49,7 +49,7 @@ module.exports = (colorPath, {compileFilePath, compileFileName}) => {
         const _path = colorPathSp[compSourceLen + i]
         path += _path + '/'
       }
-      resultPath = `./${path}${compileFileName}`
+      resultPath = `./${path}${compileFileName}.${compileFileType}`
     } else if(sourceLen > colorLen) {
       // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\_color.sass
       // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\haha\\jojo\\_color.sass
@@ -61,7 +61,7 @@ module.exports = (colorPath, {compileFilePath, compileFileName}) => {
       for (let i = 0; i < minusLen; i++) {
         path += '../'
       }
-      resultPath = `${path}${compileFileName}`
+      resultPath = `${path}${compileFileName}.${compileFileType}`
     }
     return resultPath
   }
