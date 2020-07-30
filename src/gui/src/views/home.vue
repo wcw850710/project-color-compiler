@@ -308,7 +308,7 @@
             loading.close()
           })
           .catch(err => {
-            this.$notify.success({
+            this.$notify.error({
               title: '交叉編譯失敗',
               message: '哭哭！請查看專案設定有無問題'
             })
