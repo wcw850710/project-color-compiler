@@ -89,8 +89,8 @@ module.exports = (_config) => new Promise((reslove, reject) => {
           }
         })
         if (isVueFile) {
-          vueStyleData = vueStyleData.split(color).join(resultColorVariables[color.replace(/\s/g, '')])
-          fileResult = vueStyleData.substring(vueStyleTagStartIndex, 0) + vueStyleData + vueStyleData.substring(vueStyleTagEndIndex)
+          vueStyleData = autoImport(extension, path, vueStyleData, config)
+          fileResult = fileData.substring(vueStyleTagStartIndex, 0) + vueStyleData + fileData.substring(vueStyleTagEndIndex)
         } else {
           fileData = autoImport(extension, path, fileData, config)
           fileResult = fileData
