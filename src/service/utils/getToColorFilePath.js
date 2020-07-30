@@ -1,5 +1,5 @@
-module.exports = (colorPath, {compileFilePath, compileFileName, compileFileType}) => {
-  const sourcePathSp = colorPath.split(/[\\\/]/)
+module.exports = (sourcePath, {compileFilePath, compileFileName, compileFileType}) => {
+  const sourcePathSp = sourcePath.split(/[\\\/]/)
   const compilePathSp = compileFilePath.split(/[\\\/]/)
   sourcePathSp.pop()
   compilePathSp.pop()
@@ -8,9 +8,10 @@ module.exports = (colorPath, {compileFilePath, compileFileName, compileFileType}
   const filterLen = filterPath.length
   const compileLen = compilePathSp.length
   let resultPath = ``
-  console.log('sourcePathSp', sourcePathSp,
-    'compilePathSp', compilePathSp,
-    'filterPath', filterPath,)
+  // console.log(sourcePath, compileFilePath)
+  // console.log('sourcePathSp', sourcePathSp,
+  //   'compilePathSp', compilePathSp,
+  //   'filterPath', filterPath,)
   if(filterLen < sourceLen && compileLen > filterLen) {
     // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\_color.sass
     // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\views\\a.sass
@@ -35,6 +36,17 @@ module.exports = (colorPath, {compileFilePath, compileFileName, compileFileType}
     // ./_color
     // 同層的
     resultPath = `./${compileFileName}.${compileFileType}`
+  } else if(sourceLen > compileLen) {
+    // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\_color.sass
+    // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\haha\\jojo\\_color.sass
+    // ../../_color
+    // 超過 color 的資料夾
+    const minusLen = sourceLen - compileLen
+    let path = ``
+    for (let i = 0; i < minusLen; i++) {
+      path += '../'
+    }
+    resultPath = `${path}${compileFileName}.${compileFileType}`
   } else if(filterLen < sourceLen && compileLen === filterLen) {
     // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\_color.sass
     // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\c.sass
@@ -48,18 +60,6 @@ module.exports = (colorPath, {compileFilePath, compileFileName, compileFileType}
       path += _path + '/'
     }
     resultPath = `./${path}${compileFileName}.${compileFileType}`
-  } else if(compileLen > sourceLen) {
-    // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\_color.sass
-    // C:\\Users\\wcw85\\desk\\code\\ws-projects\\sass-colors-compiler\\src\\gui\\src\\assets\\haha\\jojo\\_color.sass
-    // ../../_color
-    // 超過 color 的資料夾
-    const minusLen = compileLen - sourceLen
-    const compSourceLen = compileLen - minusLen
-    let path = ``
-    for (let i = 0; i < minusLen; i++) {
-      path += '../'
-    }
-    resultPath = `${path}${compileFileName}.${compileFileType}`
   }
   return resultPath
 }
