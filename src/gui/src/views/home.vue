@@ -26,8 +26,8 @@
         <div class="name">{{index + 1}}. {{pro.name}}</div>
         <div class="btns">
           <el-button type="default" @click="onOpenTranslateDialog(index)" disabled>移除導入</el-button>
-          <el-button type="default" @click="onOpenTranslateDialog(index)">導入顏色</el-button>
-          <el-button type="default" @click="onOpenTranslateDialog(index)">顏色過濾</el-button>
+          <el-button type="default" @click="onOpenTranslateDialog(index)" disabled>顏色過濾</el-button>
+          <el-button type="default" @click="onOpenTranslateDialog(index)" disabled>導入顏色</el-button>
           <el-button type="primary" @click="onOpenTranslateDialog(index)">轉換變量與顏色</el-button>
           <el-button type="primary" @click="onCompileColors(index)">交叉編譯</el-button>
         </div>
@@ -82,7 +82,7 @@
         </el-form-item>
         <el-form-item label="自動導入" prop="config.isAutoImport">
           <el-radio v-model="proj.config.isAutoImport" :label="true">是</el-radio>
-          <el-radio v-model="proj.config.isAutoImport" :label="false">否</el-radio>
+          <el-radio v-model="proj.config.isAutoImport" :label="false" disabled>否</el-radio>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -194,7 +194,7 @@
             compileFile: ["_colors", "scss"],
             compilePath: "C:/",
             rootPath: "C:/",
-            isAutoImport: false,
+            isAutoImport: true,
           },
         },
         cacheProject: {}, // 數據結構同 project
@@ -367,7 +367,7 @@
             compileFile: ["_colors", "scss"],
             compilePath: "C:/",
             rootPath: "C:/",
-            isAutoImport: false
+            isAutoImport: true
           }
         }
       },
