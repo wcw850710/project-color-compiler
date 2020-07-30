@@ -15,28 +15,6 @@ module.exports = (_config) => new Promise((reslove, reject) => {
   let cacheFileLength = 0
   let compileCurrent = 0
 
-  // 讀取 colors file 導出 fileData: string
-  const readColorsFileData = () => new Promise(reslove => {
-    try {
-      const data = fs.readFileSync(compileFilePath)
-      reslove(data.toString())
-    } catch (err) {
-      reslove('')
-    }
-  })
-
-  // 將 colors file 原數據從 string 轉換成 json
-  const compilerColorsFileData = input => {
-    const result = {}
-    const matchVariableAndColors = input.match(/(\$[A-z0-9-_]*)|(:\s?[#|A-z0-9(,#\.)\s;^\n]*)/g)
-    for (let i = 0; i < matchVariableAndColors.length; i++) {
-      const variable = matchVariableAndColors[i].substr(1, matchVariableAndColors[i].length)
-      const color = matchVariableAndColors[++i].replace(/[:\s\n;]/g, '')
-      result[color] = variable
-    }
-    return result
-  }
-
   // 倒數第二步：將變量數據創建到對應的 colors file
   const setVariableToCompileFile = async () => {
     const resultColorVariables = {}
@@ -159,7 +137,7 @@ module.exports = (_config) => new Promise((reslove, reject) => {
   }
 
   // 循環遍歷所有檔案，跟路徑從 rootPath 開始
-  recursiveDir(rootPath, config, () => cacheFileLength++, (fileName, path, data) => compiler(data, path))
+  recursiveDir(config, () => cacheFileLength++, (fileName, path, data) => compiler(data, path))
 
   setTimeout(() => {
     if(compileCurrent === 0) {

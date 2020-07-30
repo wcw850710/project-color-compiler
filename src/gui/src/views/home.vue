@@ -25,10 +25,10 @@
         <el-button style="margin-left: 4px;" type="default" icon="el-icon-setting" circle @click="onOpenEditorProjectDialog(true, pro, index)"></el-button>
         <div class="name">{{index + 1}}. {{pro.name}}</div>
         <div class="btns">
-          <el-button type="default" @click="onTranslateVariables(index)" disabled>移除導入</el-button>
-          <el-button type="default" @click="onTranslateVariables(index)">導入顏色</el-button>
-          <el-button type="default" @click="onTranslateVariables(index)">顏色過濾</el-button>
-          <el-button type="default" @click="onTranslateVariables(index)">轉換變量</el-button>
+          <el-button type="default" @click="onOpenTranslateDialog(index)" disabled>移除導入</el-button>
+          <el-button type="default" @click="onOpenTranslateDialog(index)">導入顏色</el-button>
+          <el-button type="default" @click="onOpenTranslateDialog(index)">顏色過濾</el-button>
+          <el-button type="primary" @click="onOpenTranslateDialog(index)">轉換變量與顏色</el-button>
           <el-button type="primary" @click="onCompileColors(index)">交叉編譯</el-button>
         </div>
       </div>
@@ -128,15 +128,42 @@
           action="hello upload"
           :show-file-list="false"
           :before-upload="onImportProjectJson"
-          v-if="cacheImpoartProjects === null"
+          v-if="cacheImportProjects === null"
       >
         <el-button size="small" type="primary">點擊上傳</el-button>
       </el-upload>
       <span v-else>請選擇要 "新增" 還是 "覆蓋"</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="onCancelImport">取消</el-button>
-        <el-button v-if="cacheImpoartProjects !== null" type="primary" @click="onImportWithNew" plain>新增</el-button>
-        <el-button v-if="cacheImpoartProjects !== null" type="primary" @click="onImportWithCover">覆蓋</el-button>
+        <el-button v-if="cacheImportProjects !== null" type="primary" @click="onImportWithNew" plain>新增</el-button>
+        <el-button v-if="cacheImportProjects !== null" type="primary" @click="onImportWithCover">覆蓋</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      title="轉換變量與顏色"
+      width="800px"
+      :visible.sync="isTranslateDialog"
+      :close-on-click-modal="false"
+      @close="onCancelTranslate"
+    >
+      <span class="translate-tip">
+        <i class="el-icon-info"></i>
+        不會幫你校正數據格式哦
+      </span>
+      <div class="colors">
+        <div class="color" v-for="color in cacheColors" :key="color.oldVariable">
+          <div class="color__cube" :style="{backgroundColor: color.color}"></div>
+          <el-input class="color__variable" v-model="color.newVariable" placeholder="請輸入變量名稱">
+            <template slot="prepend">$</template>
+          </el-input>
+          <el-input class="color__color" v-model="color.color" placeholder="請輸入顏色"></el-input>
+          <el-input class="color__commit" v-model="color.commit" placeholder="請輸入顏色備註"></el-input>
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="onCancelTranslate">取消</el-button>
+        <el-button type="primary" @click="onTranslate">轉換</el-button>
       </span>
     </el-dialog>
   </div>
@@ -154,11 +181,12 @@
         isEditPath: true,
         isEditProject: false,
         isImportDialog: false,
+        isTranslateDialog: false,
         path: '',
         cachePath: '',
         paths: [],
         pathSetKey: '',
-        cacheImpoartProjects: null, // []
+        cacheImportProjects: null, // []
         project: {
           name: '',
           config: {
@@ -179,6 +207,7 @@
           'config.fileExtensions': [{ required: true, message: '請勾選查找類型', trigger: 'change' },],
           'config.isAutoImport': [{ required: true, message: '請選擇是否自動導入', trigger: 'change' },],
         },
+        cacheColors: []
       }
     },
     computed: {
@@ -197,13 +226,59 @@
     // mounted(){},
     // beforeDestroy() {},
     methods: {
+      onCancelTranslate(){
+        this.isTranslateDialog = false
+      },
+      async onTranslate(){
+        const config = this.projects[this.cacheProjectIndex].config
+        const colors = this.cacheColors
+        const loading = this.loading()
+        try {
+          await this.$http.translateColorsAndVariables({config, colors})
+          this.$notify.success({
+            title: '顏色轉換成功',
+            message: '大風吹吹什麼'
+          })
+        }catch (e) {
+          this.$notify.error({
+            title: '顏色轉換失敗',
+            message: '天哪！驚人的一手'
+          })
+        }
+        loading.close()
+        this.isTranslateDialog = false
+      },
+      async onOpenTranslateDialog(index){
+        const config = this.projects[index].config
+        const loading = this.loading()
+        this.cacheColors = []
+        this.cacheProjectIndex = index
+        try {
+          const colors = (await this.$http.getColors({config})).data.data
+          if(colors.length === 0) throw new Error('沒有顏色不讓你開哈哈')
+          this.cacheColors = colors.map(color => ({
+            commit: color.commit || '',
+            color: color.color,
+            newVariable: color.variable,
+            oldVariable: color.variable,
+          }))
+          this.$notify.success({
+            title: '顏色取得成功',
+            message: '這麼輕易就讓你到手'
+          })
+          this.isTranslateDialog = true
+        } catch (e) {
+          this.$notify.error({
+            title: '暫無顏色',
+            message: '沒顏色還想點呀'
+          })
+        }
+        loading.close()
+      },
       loading(){
         return this.$loading({
           lock: true,
         })
-      },
-      onTranslateVariables(index){
-
       },
       onCompileColors(index){
         const config = this.projects[index].config
@@ -232,10 +307,10 @@
       },
       onCancelImport(){
         this.isImportDialog = false
-        this.cacheImpoartProjects = null
+        this.cacheImportProjects = null
       },
       onImportWithNew(){
-        this.cacheImpoartProjects.forEach(pro => {
+        this.cacheImportProjects.forEach(pro => {
           !this.projects.find(_pro => _pro.name === pro.name) && this.$store.commit('ADD_PROJECT', pro)
         })
         this.$notify.success({
@@ -245,7 +320,7 @@
         this.onCancelImport()
       },
       onImportWithCover(){
-        this.$store.commit('SET_PROJECTS', this.cacheImpoartProjects)
+        this.$store.commit('SET_PROJECTS', this.cacheImportProjects)
         this.$notify.success({
           title: '覆蓋專案成功',
           message: '機智的選擇'
@@ -274,7 +349,7 @@
                 throw new Error('???')
               }
             })
-            this.cacheImpoartProjects = projects
+            this.cacheImportProjects = projects
           }catch (err) {
             this.$notify.success({
               title: '資料格式錯誤',
@@ -495,6 +570,46 @@
     }
     i {
       margin-right: 6px;
+    }
+  }
+
+  .colors {}
+  .translate-tip {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    color: #606266;
+    font-size: 13px;
+    i {
+      color: #e6a23c;
+      font-size: 20px;
+      margin-right: 4px;
+    }
+  }
+  .color {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    &__cube {
+      min-width: 32px;
+      height: 32px;
+      margin-right: 4px;
+      border-radius: 4px;
+    }
+    &__variable {
+      width: 200px;
+      margin-right: 4px;
+      &::v-deep .el-input-group__prepend {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+    }
+    &__color {
+      width: 150px;
+      margin-right: 4px;
+    }
+    &__commit {
+      flex: 1;
     }
   }
 </style>

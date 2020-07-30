@@ -1,7 +1,7 @@
-module.exports = (colorPath, compilePath, compileFileName) => {
+module.exports = (colorPath, {compileFilePath, compileFileName}) => {
   const colorPathSp = colorPath.split(/[\\\/]/)
   colorPathSp.pop()
-  const compilePathSp = `${colorPath}${compileFileName}`.split(/[\\\/]/)
+  const compilePathSp = compileFilePath.split(/[\\\/]/)
   compilePathSp.pop()
 
   const addPath = (sourcePath) => {
