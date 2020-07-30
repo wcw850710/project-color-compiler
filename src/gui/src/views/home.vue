@@ -156,7 +156,7 @@
       :close-on-click-modal="false"
       @close="onCancelTranslate"
     >
-      <span class="translate-tip">
+      <span class="translate-tip" :class="{'translate-tip--night': isNight}">
         <i class="el-icon-info"></i>
         不會幫你校正數據格式哦
       </span>
@@ -607,6 +607,9 @@
       font-size: 20px;
       margin-right: 4px;
     }
+    &--night {
+      color: #c0c0c0;
+    }
   }
   .color {
     display: flex;
@@ -653,6 +656,4 @@
       background-color: rgba(#fff, .2);
     }
   }
-  
-
 </style>
