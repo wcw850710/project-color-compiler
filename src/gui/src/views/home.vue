@@ -514,7 +514,7 @@
         this.isPathDialog = false
       },
       onSubmitPath() {
-        this.$set(this.project.config, this.pathSetKey, this.path)
+        this.$set(this.proj.config, this.pathSetKey, this.path)
         this.isPathDialog = false
       },
       async onOpenPathDialog(path, key) {
