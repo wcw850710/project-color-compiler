@@ -12,7 +12,7 @@
 <!--      <el-page-header v-if="routeName === 'project'" @back="goBack" :content="projectName" />-->
     </header>
     <router-view/>
-    <footer>@Frank<span @click="isReportDialog = true">v0.0.0</span></footer>
+    <footer :style="{color: isNight ? '#fff' : '#000'}">@Frank<span @click="isReportDialog = true">v0.0.0</span></footer>
 
     <el-dialog
       title="更新紀錄 v0.0.0"
