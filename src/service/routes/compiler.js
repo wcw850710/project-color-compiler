@@ -7,6 +7,8 @@ module.exports = (_config) => new Promise((reslove, reject) => {
   const createHash = require('../utils/createHash')
   const getFileColors = require('../utils/getFileColors')
   const autoImport = require('../utils/autoImport')
+  const getPathExtension = require('../utils/getPathExtension')
+  const getVueStyle = require('../utils/getVueStyle')
   const config = getConfig(_config)
   const {fileExtensions, compileFilePath, rootPath, compileFileType, isAutoImport} = config
   const result = {}
@@ -21,9 +23,11 @@ module.exports = (_config) => new Promise((reslove, reject) => {
     const colorsFileData = await getFileColors(compileFilePath)
     let colorsFileResult = ''
     if (Object.keys(result).length) {
+      // TODO 這裡判斷待修正，多餘的判斷欠砍
       const isSass = fileExtensions['.sass'] === true
       const isScss = fileExtensions['.scss'] === true
-      if (isSass || isScss) {
+      const isVue = fileExtensions['.vue'] === true
+      if (isSass || isScss || isVue) {
         for (const color in colorsFileData) {
           const { variable, commit } = colorsFileData[color]
           const period = (compileFileType === 'scss' ? `;` : '') + `${commit ? ` // ${commit}` : ''}\n`
@@ -69,14 +73,29 @@ module.exports = (_config) => new Promise((reslove, reject) => {
     const flatAndSortColorsFromStringLength = colors => colors.reduce((prev, color) => typeof color === 'string' ? [...prev, color] : [...prev, ...color], []).sort((a, b) => b.length > a.length ? 1 : -1)
     cacheFile.forEach((path, index) => {
       fs.readFile(path, (err, data) => {
-        const filePathSp = path.split('.')
-        const extension = filePathSp[filePathSp.length - 1]
+        const extension = getPathExtension(path)
+        const isVueFile = extension === 'vue'
         let fileData = data.toString()
+        let { styleTagStartIndex: vueStyleTagStartIndex,
+          styleTagEndIndex: vueStyleTagEndIndex,
+          styleData: vueStyleData
+        } = isVueFile ? getVueStyle(fileData) : {}
+        let fileResult = ''
         flatAndSortColorsFromStringLength(cacheFileColors[index]).forEach((color) => {
-          fileData = fileData.split(color).join(resultColorVariables[color.replace(/\s/g, '')])
+          if (isVueFile) {
+            vueStyleData = vueStyleData.split(color).join(resultColorVariables[color.replace(/\s/g, '')])
+          } else {
+            fileData = fileData.split(color).join(resultColorVariables[color.replace(/\s/g, '')])
+          }
         })
-        fileData = autoImport(extension, path, fileData, config)
-        fs.writeFile(path, fileData, err => {
+        if (isVueFile) {
+          vueStyleData = vueStyleData.split(color).join(resultColorVariables[color.replace(/\s/g, '')])
+          fileResult = vueStyleData.substring(vueStyleTagStartIndex, 0) + vueStyleData + vueStyleData.substring(vueStyleTagEndIndex)
+        } else {
+          fileData = autoImport(extension, path, fileData, config)
+          fileResult = fileData
+        }
+        fs.writeFile(path, fileResult, err => {
           if (err) {
             reject(false)
           } else {
@@ -89,8 +108,8 @@ module.exports = (_config) => new Promise((reslove, reject) => {
   }
 
   // 將遍歷到的 file 路徑及顏色緩存起來，到最後一步遍歷 file 時可以提速
-  const recordCacheData = (newPath, colors) => {
-    if (newPath !== compileFilePath) {
+  const recordCacheData = (path, colors) => {
+    if (path !== compileFilePath && colors.size > 0) {
       const setToColors = [...colors]
       const uniqueColors = {}
       setToColors.forEach(color => {
@@ -105,7 +124,7 @@ module.exports = (_config) => new Promise((reslove, reject) => {
           uniqueColors[color] = color
         }
       })
-      cacheFile.push(newPath)
+      cacheFile.push(path)
       cacheFileColors.push(Object.values(uniqueColors))
     }
   }
@@ -115,7 +134,23 @@ module.exports = (_config) => new Promise((reslove, reject) => {
     let cur = 0
     let colorIndex = 0
     let colors = new Set()
-    while (cur < input.length) {
+    const isVue = getPathExtension(path) === 'vue'
+    let styleTagStartIndex = 0
+    let styleTagEndIndex = 0
+    let hasVueStyleTag = false
+    const whileCondition = () => isVue ? cur > styleTagStartIndex && cur < styleTagEndIndex && hasVueStyleTag === true : cur < input.length
+      // 如果是 vue 檔，跑一波初始值定義
+    ;(function initCurIndex () {
+      if(isVue) {
+        // 從 style tag 裡開始計算
+        const {styleTagStartIndex: _styleTagStartIndex, styleTagEndIndex: _styleTagEndIndex} = getVueStyle(input)
+        styleTagStartIndex = _styleTagStartIndex
+        styleTagEndIndex = _styleTagEndIndex
+        cur = styleTagStartIndex + 1
+        styleTagStartIndex !== -1 && (hasVueStyleTag = true)
+      }
+    })()
+    while (whileCondition()) {
       const txt = input[cur]
       if (txt === ':') {
         colorIndex = cur

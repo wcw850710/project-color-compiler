@@ -50,7 +50,7 @@
           <el-checkbox-group v-model="proj.config.fileExtensions">
             <el-checkbox label="sass"></el-checkbox>
             <el-checkbox label="scss"></el-checkbox>
-            <el-checkbox label="vue" disabled></el-checkbox>
+            <el-checkbox label="vue"></el-checkbox>
             <el-checkbox label="js" disabled></el-checkbox>
             <el-checkbox label="ts" disabled></el-checkbox>
             <el-checkbox label="dart" disabled></el-checkbox>
@@ -241,134 +241,20 @@
       const matchVueStartStyleTag = /^\s*<\s*style\s*lang\s*=\s*['"]s[ca]ss['"]\s*(scoped|\s*)*>+\s*$|^\s*<\s*style\s*(scoped|\s*)*lang\s*=\s*['"]s[ca]ss['"]\s*>\s*$/m
       const matchVueEndStyleTag = /^\s*<\s*\/\s*style\s*>\s*$/m
       const testValue = `
-      21321421421
-<\\s*style\\s*(scoped|\\s*)*lang\\s*=\\s*['"]s[ca]ss['"]\\s*>\\s*$
-<\\s*style\\s*(lang\\s*=\\s*['"]s[ca]ss['"]\\s*(scoped|\\s?)>)\\s*$
-<style scoped lang="scss">
-<style lang="scss">
-<style lang="scss" scoped>
-  .projects {
-    width: 80%;
-    max-width: 800px;
-    margin: 16px auto 0;
-  }
-  .project {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    .name {
-      font-weight: 900;
-      flex: 1;
-      padding: 0 10px;
-    }
-    .btns {
-      display: flex;
-    }
-  }
-
-  .create-wrap {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 10px auto;
-    width: 80%;
-    max-width: 800px;
-  }
-
-  .no-project-tip {
-    color: #606266;
-    text-align: center;
-    margin-right: 10px;
-    font-size: 13px;
-  }
-
-  .form-path {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    button {
-      margin-left: 6px;
-    }
-  }
-
-  .form-compile-file {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    &__select {
-      margin-left: 6px;
-    }
-  }
-
-  .path-edit {
-    position: relative;
-    margin-bottom: 6px;
-
-    i {
-      position: absolute;
-      right: 10px;
-      top: 9px;
-      cursor: pointer;
-    }
-  }
-
-  .path-list {
-    padding: 10px 5px;
-    border-bottom: 1px solid #DCDFE6;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    &:hover {
-      background: rgba(#DCDFE6, .2);
-    }
-    i {
-      margin-right: 6px;
-    }
-  }
-
-  .colors {}
-  .translate-tip {
-    display: flex;
-    align-items: center;
-    margin-bottom: 16px;
-    color: #606266;
-    font-size: 13px;
-    i {
-      color: #e6a23c;
-      font-size: 20px;
-      margin-right: 4px;
-    }
-  }
-  .color {
-    display: flex;
-    align-items: center;
-    margin-bottom: 8px;
-    &__cube {
-      min-width: 32px;
-      height: 32px;
-      margin-right: 4px;
-      border-radius: 4px;
-    }
-    &__variable {
-      width: 200px;
-      margin-right: 4px;
-      &::v-deep .el-input-group__prepend {
-        padding-left: 10px;
-        padding-right: 10px;
-      }
-    }
-    &__color {
-      width: 150px;
-      margin-right: 4px;
-    }
-    &__commit {
-      flex: 1;
-    }
-  }
-</style>`
+        123
+        4565664564564654
+        <style lang="scss" scoped>
+        .a { color: #000; }
+        </style>
+      `
       const styleTagStartIndex = testValue.search(matchVueStartStyleTag)
       const styleTagEndIndex = testValue.search(matchVueEndStyleTag)
       console.log(styleTagStartIndex, styleTagEndIndex)
+      console.log(testValue,  )
+      console.log(testValue.substring(styleTagStartIndex, styleTagEndIndex),)
+      console.log(`${testValue.substring(styleTagStartIndex, 0)}<style lang="scss" scoped>
+        .a { color: $#@!FEW; }
+        ${testValue.substring(styleTagEndIndex)}`)
     },
     // mounted(){},
     // beforeDestroy() {},
