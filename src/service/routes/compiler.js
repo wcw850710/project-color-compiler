@@ -6,15 +6,16 @@ module.exports = (_config) => new Promise((reslove, reject) => {
   const recursiveDir = require("../utils/recursiveDir")
   const createHash = require('../utils/createHash')
   const getFileColors = require('../utils/getFileColors')
+  const autoImport = require('../utils/autoImport')
   const config = getConfig(_config)
-  const {fileExtensions, compileFilePath, rootPath, compileFileType} = config
+  const {fileExtensions, compileFilePath, rootPath, compileFileType, isAutoImport} = config
   const result = {}
   let cacheFile = []
   let cacheFileColors = []
   let cacheFileLength = 0
   let compileCurrent = 0
 
-  // 讀取 colors file 變倒出 fileData: string
+  // 讀取 colors file 導出 fileData: string
   const readColorsFileData = () => new Promise(reslove => {
     try {
       const data = fs.readFileSync(compileFilePath)
@@ -90,10 +91,13 @@ module.exports = (_config) => new Promise((reslove, reject) => {
     const flatAndSortColorsFromStringLength = colors => colors.reduce((prev, color) => typeof color === 'string' ? [...prev, color] : [...prev, ...color], []).sort((a, b) => b.length > a.length ? 1 : -1)
     cacheFile.forEach((path, index) => {
       fs.readFile(path, (err, data) => {
+        const filePathSp = path.split('.')
+        const extension = filePathSp[filePathSp.length - 1]
         let fileData = data.toString()
         flatAndSortColorsFromStringLength(cacheFileColors[index]).forEach((color) => {
           fileData = fileData.split(color).join(resultColorVariables[color.replace(/\s/g, '')])
         })
+        fileData = autoImport(extension, path, fileData, config)
         fs.writeFile(path, fileData, err => {
           if (err) {
             reject(false)
