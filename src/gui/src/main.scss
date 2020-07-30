@@ -52,6 +52,9 @@ table {
 .el-popconfirm__main { margin-bottom: 10px; }
 
 .night-dialog {
+  .el-dialog__body {
+    color: #c0c0c0;
+  }
   .el-dialog__title, .el-dialog__close, .el-form-item__label, .el-input__inner, .el-checkbox__label, .el-input.is-disabled .el-input__inner {
     color: #fff;
   }

@@ -15,6 +15,7 @@
     <footer :style="{color: isNight ? '#fff' : '#000'}">@Frank<span @click="isReportDialog = true">v0.0.0</span></footer>
 
     <el-dialog
+      :class="{'night-dialog': isNight}"
       title="更新紀錄 v0.0.0"
       width="400px"
       :visible.sync="isReportDialog"
