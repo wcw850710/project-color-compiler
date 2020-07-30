@@ -79,7 +79,7 @@ module.exports = (_config) => new Promise((reslove, reject) => {
         let { styleTagStartIndex: vueStyleTagStartIndex,
           styleTagEndIndex: vueStyleTagEndIndex,
           styleData: vueStyleData
-        } = isVueFile ? getVueStyle(fileData) : {}
+        } = isVueFile ? getVueStyle.compile(fileData) : {}
         let fileResult = ''
         flatAndSortColorsFromStringLength(cacheFileColors[index]).forEach((color) => {
           if (isVueFile) {
@@ -143,7 +143,7 @@ module.exports = (_config) => new Promise((reslove, reject) => {
     ;(function initCurIndex () {
       if(isVue) {
         // 從 style tag 裡開始計算
-        const {styleTagStartIndex: _styleTagStartIndex, styleTagEndIndex: _styleTagEndIndex} = getVueStyle(input)
+        const {styleTagStartIndex: _styleTagStartIndex, styleTagEndIndex: _styleTagEndIndex} = getVueStyle.compile(input)
         styleTagStartIndex = _styleTagStartIndex
         styleTagEndIndex = _styleTagEndIndex
         cur = styleTagStartIndex + 1
