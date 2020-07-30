@@ -8,6 +8,7 @@ export default new Vuex.Store({
   plugins: [createPersistedState()],
   state: {
     projects: [],
+    theme: 'night',
   },
   mutations: {
     ADD_PROJECT(state, project) {
@@ -21,6 +22,9 @@ export default new Vuex.Store({
     },
     REMOVE_PROJECT(state, index){
       state.projects.splice(index, 1)
+    },
+    SET_THEME(state, theme) {
+      state.theme = theme
     }
   },
   actions: {},

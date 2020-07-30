@@ -2,15 +2,15 @@
   <div>
     <div class="create-wrap">
       <div class="no-project-tip" v-if="projects.length === 0">還沒有專案嗎？快點擊新增吧！</div>
-      <div class="no-project-tip" v-else>探索這些專案吧！</div>
+      <div class="no-project-tip" v-else  :style="{color: isNight ? '#fff' : '#000'}">探索這些專案吧！</div>
       <div class="btns">
-        <el-button type="default" @click="onOpenImportDialog" plain>匯入</el-button>
-        <el-button type="default" @click="onExportProjects" plain v-if="projects.length > 0">匯出</el-button>
+        <el-button type="default" @click="onOpenImportDialog" :class="{'night-default-btn': isNight}" plain>匯入</el-button>
+        <el-button type="default" @click="onExportProjects" :class="{'night-default-btn': isNight}" plain v-if="projects.length > 0">匯出</el-button>
         <el-button type="primary" @click="onOpenEditorProjectDialog">新增專案</el-button>
       </div>
     </div>
 
-    <el-card v-for="(pro, index) in projects" :key="pro.name" shadow="hover" class="projects">
+    <el-card v-for="(pro, index) in projects" :key="pro.name" shadow="hover" class="projects" :class="{'night-default-btn': isNight}">
       <div class="project">
         <el-popconfirm
           confirmButtonText='是'
@@ -22,12 +22,12 @@
         >
           <el-button slot="reference" type="danger" icon="el-icon-delete" circle></el-button>
         </el-popconfirm>
-        <el-button style="margin-left: 4px;" type="default" icon="el-icon-setting" circle @click="onOpenEditorProjectDialog(true, pro, index)"></el-button>
+        <el-button style="margin-left: 4px;" :class="{'night-default-btn': isNight}" type="default" icon="el-icon-setting" circle @click="onOpenEditorProjectDialog(true, pro, index)"></el-button>
         <div class="name">{{index + 1}}. {{pro.name}}</div>
         <div class="btns">
-          <el-button type="default" @click="onOpenTranslateDialog(index)" disabled>移除導入</el-button>
-          <el-button type="default" @click="onOpenTranslateDialog(index)" disabled>顏色過濾</el-button>
-          <el-button type="default" @click="onOpenTranslateDialog(index)" disabled>導入顏色</el-button>
+          <el-button type="default" @click="onOpenTranslateDialog(index)" :class="{'night-default-btn--disabled': isNight}" disabled>移除導入</el-button>
+          <el-button type="default" @click="onOpenTranslateDialog(index)" :class="{'night-default-btn--disabled': isNight}" disabled>顏色過濾</el-button>
+          <el-button type="default" @click="onOpenTranslateDialog(index)" :class="{'night-default-btn--disabled': isNight}" disabled>導入顏色</el-button>
           <el-button type="primary" @click="onOpenTranslateDialog(index)">轉換變量與顏色</el-button>
           <el-button type="primary" @click="onCompileColors(index)">交叉編譯</el-button>
         </div>
@@ -35,6 +35,7 @@
     </el-card>
 
     <el-dialog
+      :class="{'night-dialog': isNight}"
       :title="isEditProject ? '編輯專案' : '新增專案'"
       width="800px"
       :visible.sync="isEditorProjectDialog"
@@ -51,6 +52,8 @@
             <el-checkbox label="scss"></el-checkbox>
             <el-checkbox label="vue" disabled></el-checkbox>
             <el-checkbox label="js" disabled></el-checkbox>
+            <el-checkbox label="ts" disabled></el-checkbox>
+            <el-checkbox label="dart" disabled></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="專案路徑" prop="config.rootPath">
@@ -70,11 +73,11 @@
             <el-input v-model="proj.config.compileFile[0]"></el-input>
             <el-select v-model="proj.config.compileFile[1]" placeholder="請選擇檔案類型" class="form-compile-file__select">
               <el-option
-                v-for="extension in ['scss', 'sass', 'js']"
+                v-for="extension in ['scss', 'sass', 'js', 'ts', 'dart']"
                 :key="extension"
                 :label="extension"
                 :value="extension"
-                :disabled="extension === 'js'"
+                :disabled="extension === 'js' || extension === 'ts' || extension === 'dart'"
               >
               </el-option>
             </el-select>
@@ -84,6 +87,9 @@
           <el-radio v-model="proj.config.isAutoImport" :label="true">是</el-radio>
           <el-radio v-model="proj.config.isAutoImport" :label="false" disabled>否</el-radio>
         </el-form-item>
+        <el-form-item label="格式訂製">
+          計畫中
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="onCloseEditorProjectDialog">取消</el-button>
@@ -92,6 +98,7 @@
     </el-dialog>
 
     <el-dialog
+      :class="{'night-dialog': isNight}"
       title="設定路徑"
       width="800px"
       :visible.sync="isPathDialog"
@@ -101,11 +108,11 @@
       <div class="path-edit">
         <el-input v-model="path" disabled v-if="isEditPath"></el-input>
         <el-input ref="r-cache-path" v-model="cachePath" v-else @change="onEditPath"></el-input>
-        <i class="el-icon-edit" @click="onEditPath"></i>
+        <i class="el-icon-edit" :class="{'path-list--night': isNight}" @click="onEditPath"></i>
       </div>
       <ul>
-        <li v-if="path.split('/').length && path.split('/')[1] !== '' && path !== ''" @click="onGoBackPath" class="path-list"><i class="el-icon-back"></i></li>
-        <li v-for="path in paths" :key="path.name" @click="onSelectPath(path)" class="path-list">
+        <li v-if="path.split('/').length && path.split('/')[1] !== '' && path !== ''" @click="onGoBackPath" class="path-list" :class="{'path-list--night': isNight}"><i class="el-icon-back"></i></li>
+        <li v-for="path in paths" :key="path.name" @click="onSelectPath(path)" class="path-list" :class="{'path-list--night': isNight}">
           <i class="el-icon-folder" v-if="path.isDirectory === true"></i>
           <span>{{path.name}}</span>
         </li>
@@ -117,6 +124,7 @@
     </el-dialog>
 
     <el-dialog
+      :class="{'night-dialog': isNight}"
       title="匯入專案"
       width="800px"
       :visible.sync="isImportDialog"
@@ -141,6 +149,7 @@
     </el-dialog>
 
     <el-dialog
+      :class="{'night-dialog': isNight}"
       title="轉換變量與顏色"
       width="800px"
       :visible.sync="isTranslateDialog"
@@ -211,6 +220,12 @@
       }
     },
     computed: {
+      theme(){
+        return this.$store.state.theme
+      },
+      isNight(){
+        return this.theme === 'night'
+      },
       projects() {
         return this.$store.state.projects
       },
@@ -222,7 +237,139 @@
         }
       }
     },
-    // created() {},
+    created() {
+      const matchVueStartStyleTag = /^\s*<\s*style\s*lang\s*=\s*['"]s[ca]ss['"]\s*(scoped|\s*)*>+\s*$|^\s*<\s*style\s*(scoped|\s*)*lang\s*=\s*['"]s[ca]ss['"]\s*>\s*$/m
+      const matchVueEndStyleTag = /^\s*<\s*\/\s*style\s*>\s*$/m
+      const testValue = `
+      21321421421
+<\\s*style\\s*(scoped|\\s*)*lang\\s*=\\s*['"]s[ca]ss['"]\\s*>\\s*$
+<\\s*style\\s*(lang\\s*=\\s*['"]s[ca]ss['"]\\s*(scoped|\\s?)>)\\s*$
+<style scoped lang="scss">
+<style lang="scss">
+<style lang="scss" scoped>
+  .projects {
+    width: 80%;
+    max-width: 800px;
+    margin: 16px auto 0;
+  }
+  .project {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    .name {
+      font-weight: 900;
+      flex: 1;
+      padding: 0 10px;
+    }
+    .btns {
+      display: flex;
+    }
+  }
+
+  .create-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px auto;
+    width: 80%;
+    max-width: 800px;
+  }
+
+  .no-project-tip {
+    color: #606266;
+    text-align: center;
+    margin-right: 10px;
+    font-size: 13px;
+  }
+
+  .form-path {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    button {
+      margin-left: 6px;
+    }
+  }
+
+  .form-compile-file {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    &__select {
+      margin-left: 6px;
+    }
+  }
+
+  .path-edit {
+    position: relative;
+    margin-bottom: 6px;
+
+    i {
+      position: absolute;
+      right: 10px;
+      top: 9px;
+      cursor: pointer;
+    }
+  }
+
+  .path-list {
+    padding: 10px 5px;
+    border-bottom: 1px solid #DCDFE6;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    &:hover {
+      background: rgba(#DCDFE6, .2);
+    }
+    i {
+      margin-right: 6px;
+    }
+  }
+
+  .colors {}
+  .translate-tip {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    color: #606266;
+    font-size: 13px;
+    i {
+      color: #e6a23c;
+      font-size: 20px;
+      margin-right: 4px;
+    }
+  }
+  .color {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    &__cube {
+      min-width: 32px;
+      height: 32px;
+      margin-right: 4px;
+      border-radius: 4px;
+    }
+    &__variable {
+      width: 200px;
+      margin-right: 4px;
+      &::v-deep .el-input-group__prepend {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+    }
+    &__color {
+      width: 150px;
+      margin-right: 4px;
+    }
+    &__commit {
+      flex: 1;
+    }
+  }
+</style>`
+      const styleTagStartIndex = testValue.search(matchVueStartStyleTag)
+      const styleTagEndIndex = testValue.search(matchVueEndStyleTag)
+      console.log(styleTagStartIndex, styleTagEndIndex)
+    },
     // mounted(){},
     // beforeDestroy() {},
     methods: {
@@ -270,7 +417,7 @@
         } catch (e) {
           this.$notify.error({
             title: '暫無顏色',
-            message: '沒顏色還想點呀'
+            message: '沒顏色還敢點呀'
           })
         }
         loading.close()
@@ -493,7 +640,7 @@
     },
   }
 </script>
-<style lang="scss" scoped>
+<style  scoped lang="scss">
   .projects {
     width: 80%;
     max-width: 800px;
@@ -557,6 +704,9 @@
       top: 9px;
       cursor: pointer;
     }
+    &--night {
+      color: #fff;
+    }
   }
 
   .path-list {
@@ -570,6 +720,9 @@
     }
     i {
       margin-right: 6px;
+    }
+    &--night {
+      color: #fff;
     }
   }
 
@@ -612,4 +765,19 @@
       flex: 1;
     }
   }
+
+  .night-default-btn {
+    color: #fff;
+    background-color: transparent;
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  .night-default-btn--disabled {
+    color: #C0C4CC;
+    background-color: transparent;
+  }
+  
+
 </style>

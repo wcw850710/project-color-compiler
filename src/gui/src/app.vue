@@ -1,9 +1,11 @@
 <template>
-  <div id="app">
+  <div id="app" :style="{backgroundColor: isNight ? '#303133' : '#fff'}">
 <!--    <header :style="{justifyContent: routeName === 'home' ? 'center' : 'flex-start'}">-->
     <header>
-      <h1>專案顏色管理工具</h1>
-      <div class="tip ">
+      <h1 :style="{color: isNight ? '#fff' : '#000'}">專案顏色管理工具</h1>
+      <i class="theme night el-icon-moon" @click="onChanceTheme" v-if="isNight"></i>
+      <i class="theme el-icon-sunny" @click="onChanceTheme" v-else></i>
+      <div class="tip" :style="{color: isNight ? '#fff' : '#000'}">
         <i class="el-icon-question"></i>
         <div>使用說明</div>
       </div>
@@ -30,6 +32,12 @@
       }
     },
     computed: {
+      theme(){
+        return this.$store.state.theme
+      },
+      isNight(){
+        return this.theme === 'night'
+      },
       // routeName() {
       //   return this.$route.name
       // },
@@ -38,6 +46,9 @@
       // }
     },
     methods: {
+      onChanceTheme() {
+        return this.isNight ? this.$store.commit('SET_THEME', 'sun') : this.$store.commit('SET_THEME', 'night')
+      }
       // goBack() {
       //   this.$router.push('/')
       // }
@@ -47,6 +58,7 @@
 <style lang="scss" scoped>
   #app {
     padding-bottom: 40px;
+    min-height: 100vh;
   }
   header {
     display: flex;
@@ -58,10 +70,17 @@
       font-size: 24px;
       font-weight: 900;
     }
+    .theme {
+      margin-left: auto;
+      cursor: pointer;
+      &.night {
+        color: #fff;
+      }
+    }
     .tip {
       display: inline-flex;
       align-items: center;
-      margin-left: auto;
+      margin-left: 12px;
       cursor: pointer;
       &:hover {
         color: #409EFF;

@@ -51,3 +51,27 @@ table {
 
 .el-popconfirm__main { margin-bottom: 10px; }
 
+.night-dialog {
+  .el-dialog__title, .el-dialog__close, .el-form-item__label, .el-input__inner, .el-checkbox__label, .el-input.is-disabled .el-input__inner {
+    color: #fff;
+  }
+  .el-input__inner, .el-input.is-disabled .el-input__inner {
+    border-color: #fff;
+    background-color: transparent;
+  }
+  .el-input.is-disabled .el-input__inner {
+    background-color: rgba(#fff, .2);
+  }
+  .el-dialog {
+    background: #303133;
+  }
+  .el-button--default {
+    border-color: #fff;
+    color: #fff;
+    background-color: transparent;
+    &:hover {
+      color: #409EFF;
+      border-color: #409EFF;
+    }
+  }
+}
