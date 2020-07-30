@@ -99,7 +99,7 @@
 
     <el-dialog
       :class="{'night-dialog': isNight}"
-      title="設定路徑"
+      :title="'設定' + cachePathTitle"
       width="800px"
       :visible.sync="isPathDialog"
       :close-on-click-modal="false"
@@ -193,6 +193,7 @@
         isTranslateDialog: false,
         path: '',
         cachePath: '',
+        cachePathTitle: '路徑',
         paths: [],
         pathSetKey: '',
         cacheImportProjects: null, // []
@@ -505,6 +506,11 @@
         this.isPathDialog = true
         this.isEditPath = true
         this.pathSetKey = key
+        if(key === 'rootPath') {
+          this.cachePathTitle = '專案路徑'
+        } else if(key === 'compilePath') {
+          this.cachePathTitle = '編譯路徑'
+        }
       },
     },
   }
