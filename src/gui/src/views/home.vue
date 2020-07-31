@@ -158,7 +158,7 @@
     >
       <span class="translate-tip" :class="{'translate-tip--night': isNight}">
         <i class="el-icon-info"></i>
-        不會幫你校正數據格式哦
+        不會幫你校正數據格式哦(TODO: 取代顏色)
       </span>
       <div class="colors">
         <div class="color" v-for="color in cacheColors" :key="color.oldVariable">
