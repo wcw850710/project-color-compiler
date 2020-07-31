@@ -46,16 +46,6 @@
         <el-form-item label="專案名稱" prop="name">
           <el-input v-model="proj.name"></el-input>
         </el-form-item>
-        <el-form-item label="查找類型" prop="config.fileExtensions">
-          <el-checkbox-group v-model="proj.config.fileExtensions">
-            <el-checkbox label="sass"></el-checkbox>
-            <el-checkbox label="scss"></el-checkbox>
-            <el-checkbox label="vue"></el-checkbox>
-            <el-checkbox label="js" disabled></el-checkbox>
-            <el-checkbox label="ts" disabled></el-checkbox>
-            <el-checkbox label="dart" disabled></el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
         <el-form-item label="專案路徑" prop="config.rootPath">
           <div class="form-path">
             <el-input readonly v-model="proj.config.rootPath"></el-input>
@@ -71,17 +61,27 @@
         <el-form-item label="編譯檔案" prop="config.compileFile[0]">
           <div class="form-compile-file">
             <el-input v-model="proj.config.compileFile[0]"></el-input>
-            <el-select v-model="proj.config.compileFile[1]" placeholder="請選擇檔案類型" class="form-compile-file__select">
+            <el-select v-model="proj.config.compileFile[1]" placeholder="請選擇檔案類型" class="form-compile-file__select" @change="onChangeFileType">
               <el-option
-                v-for="extension in ['scss', 'sass', 'js', 'ts', 'dart']"
+                v-for="extension in compileExtensions"
                 :key="extension"
                 :label="extension"
                 :value="extension"
-                :disabled="extension === 'js' || extension === 'ts' || extension === 'dart'"
+                :disabled="extension === 'dart'"
               >
               </el-option>
             </el-select>
           </div>
+        </el-form-item>
+        <el-form-item label="查找類型" prop="config.fileExtensions">
+          <el-checkbox-group v-model="proj.config.fileExtensions">
+            <el-checkbox
+              v-for="extension in searchExtensions"
+              :key="extension"
+              :label="extension"
+              :disabled="disabledTypes.indexOf(extension) !== -1 || extension === 'dart'"
+            ></el-checkbox>
+          </el-checkbox-group>
         </el-form-item>
         <el-form-item label="自動導入" prop="config.isAutoImport">
           <el-radio v-model="proj.config.isAutoImport" :label="true">是</el-radio>
@@ -200,13 +200,15 @@
         project: {
           name: '',
           config: {
-            fileExtensions: ["scss"],
+            fileExtensions: [],
             compileFile: ["_colors", "scss"],
             compilePath: "C:/",
             rootPath: "C:/",
             isAutoImport: false,
           },
         },
+        cacheCompileFileType: '',
+        disabledTypes: '',
         cacheProject: {}, // 數據結構同 project
         cacheProjectIndex: 0,
         rules: {
@@ -217,7 +219,11 @@
           'config.fileExtensions': [{ required: true, message: '請勾選查找類型', trigger: 'change' },],
           'config.isAutoImport': [{ required: true, message: '請選擇是否自動導入', trigger: 'change' },],
         },
-        cacheColors: []
+        cacheColors: [],
+        regTjs: /^[tj]s$/,
+        regSass: /^s[ca]ss$/,
+        compileExtensions: ['scss', 'sass', 'js', 'ts', 'dart'],
+        searchExtensions: ['scss', 'sass', 'vue', 'js', 'ts', 'dart'],
       }
     },
     computed: {
@@ -242,6 +248,25 @@
     // mounted(){},
     // beforeDestroy() {},
     methods: {
+      changeDisabledTypes() {
+        const { regTjs, regSass } = this
+        if(regSass.test(this.cacheCompileFileType) === true) {
+          this.disabledTypes = 'jstsdart'
+        } else if(regTjs.test(this.cacheCompileFileType) === true) {
+          this.disabledTypes = 'scsssassvue'
+        }
+      },
+      onChangeFileType(type) {
+        const { regTjs, regSass } = this
+        if(
+          (regTjs.test(type) === true && regTjs.test(this.cacheCompileFileType) === false) ||
+          (regSass.test(type) === true && regSass.test(this.cacheCompileFileType) === false)
+        ) {
+          this.$set(this.proj.config, 'fileExtensions', [])
+        }
+        this.cacheCompileFileType = type
+        this.changeDisabledTypes()
+      },
       onCancelTranslate(){
         this.isTranslateDialog = false
       },
@@ -380,13 +405,15 @@
         this.project = {
           name: '',
           config: {
-            fileExtensions: ["scss"],
+            fileExtensions: [],
             compileFile: ["_colors", "scss"],
             compilePath: "C:/",
             rootPath: "C:/",
             isAutoImport: false
           }
         }
+        this.cacheCompileFileType = "scss"
+        this.disabledTypes = 'jstsdart'
       },
       async onExportProjects() {
         try {
@@ -404,10 +431,14 @@
       onOpenEditorProjectDialog(isEdit = false, project, index) {
         this.resetProjectRuleForm()
         if(isEdit === true) {
+          const cloneProject = JSON.parse(JSON.stringify(project))
+          const cacheCompileFileType = cloneProject.config.compileFile[1]
           this.isEditorProjectDialog = true
           this.isEditProject = true
           this.cacheProjectIndex = index
-          this.cacheProject = JSON.parse(JSON.stringify(project))
+          this.cacheProject = cloneProject
+          this.cacheCompileFileType = cacheCompileFileType
+          this.changeDisabledTypes()
         } else {
           this.isEditorProjectDialog = true
           this.initProject()
