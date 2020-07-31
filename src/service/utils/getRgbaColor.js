@@ -1,9 +1,10 @@
 module.exports = (input, index, returnIndexCallback) => {
   let color = ''
+  let rgba = ['r', 'g', 'b', 'a']
   let rgbaCur = 0
   let startBracketsLen = 0
   let endBracketsLen = 0
-  while(input[index] !== undefined && /[rgba]/.test(input[index])) {
+  while(input[index] !== undefined && input[index] === rgba[rgbaCur]) {
     color += input[index]
     index++
     rgbaCur++
