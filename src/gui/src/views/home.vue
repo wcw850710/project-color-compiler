@@ -85,7 +85,7 @@
         </el-form-item>
         <el-form-item label="自動導入" prop="config.isAutoImport">
           <el-radio v-model="proj.config.isAutoImport" :label="true">是</el-radio>
-          <el-radio v-model="proj.config.isAutoImport" :label="false" disabled>否(沒什麼用先禁用)</el-radio>
+          <el-radio v-model="proj.config.isAutoImport" :label="false">否</el-radio>
         </el-form-item>
         <el-form-item label="格式訂製">
           <span style="color: #C0C4CC; user-select: none;">計畫中</span>
@@ -204,7 +204,7 @@
             compileFile: ["_colors", "scss"],
             compilePath: "C:/",
             rootPath: "C:/",
-            isAutoImport: true,
+            isAutoImport: false,
           },
         },
         cacheProject: {}, // 數據結構同 project
@@ -384,7 +384,7 @@
             compileFile: ["_colors", "scss"],
             compilePath: "C:/",
             rootPath: "C:/",
-            isAutoImport: true
+            isAutoImport: false
           }
         }
       },
