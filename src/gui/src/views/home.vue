@@ -79,7 +79,7 @@
               v-for="extension in searchExtensions"
               :key="extension"
               :label="extension"
-              :disabled="disabledTypes.indexOf(extension) !== -1 || extension === 'dart'"
+              v-if="disabledTypes.indexOf(extension) === -1 && extension !== 'dart'"
             ></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
