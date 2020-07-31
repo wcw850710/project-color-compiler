@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const router = require('./routes')
-const bodyParser = require('body-parser')
 const multer = require('multer');
 const upload = multer();
 
