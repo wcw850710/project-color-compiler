@@ -1,4 +1,4 @@
-module.exports = (sourcePath, {compileFilePath, compileFileName, compileFileType}) => {
+export default (sourcePath, {compileFilePath, compileFileName, compileFileType}) => {
   const sourcePathSp = sourcePath.split(/[\\\/]/)
   const compilePathSp = compileFilePath.split(/[\\\/]/)
   sourcePathSp.pop()

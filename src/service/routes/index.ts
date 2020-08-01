@@ -1,12 +1,12 @@
-const express = require('express')
+import * as express from 'express'
 const router = express.Router()
-const compiler = require('./compiler')
-// const fs = require('fs')
-// const createHash = require('../utils/createHash')
-const getColors = require('./getColors')
-const getFilePath = require('./getFilePath')
-const translateColorsAndVariables = require('./translateColorsAndVariables')
-const downloadProjects = require('./downloadProjects')
+import compiler from './compiler'
+// import * as fs from 'fs'
+// import * as createHash from '../utils/createHash'
+import getColors from './getColors'
+import getFilePath from './getFilePath'
+import translateColorsAndVariables from './translateColorsAndVariables'
+import downloadProjects from './downloadProjects'
 
 // (主要 API) 交叉編輯
 router.post('/compiler', async (req, res) => {
@@ -80,5 +80,4 @@ router.post('/importProject', (req, res) => {
 })
 
 // TODO 過濾顏色 api
-
-module.exports = router
+export default router

@@ -1,4 +1,4 @@
-module.exports = (input, index, returnIndexCallback) => {
+export default (input, index, returnIndexCallback) => {
   let color = ''
   let colorLen = 0
   let isHashColor = false

@@ -1,7 +1,7 @@
-const fs = require('fs')
-const path = require('path')
-const createHash = require('../utils/createHash')
-module.exports = {
+import * as fs from 'fs'
+import createHash from '../utils/createHash'
+
+export default {
   before: (req, res) => {
     const { data } = req.body
     const hashFileName = `export-${createHash()}.json`
@@ -25,7 +25,7 @@ module.exports = {
       if(err) {
         console.log(err)
       }else {
-        fs.unlinkSync(path, () => {})
+        fs.unlinkSync(path)
       }
     })
   }

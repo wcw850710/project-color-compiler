@@ -1,7 +1,7 @@
-const getFileColors = require('../utils/getFileColors')
-const getConfig = require('../utils/getConfig')
+import getFileColors from '../utils/getFileColors'
+import getConfig from '../utils/getConfig'
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   const { config } = req.body
   const { compileFilePath } = getConfig(config)
   const colorJson = await getFileColors(compileFilePath)

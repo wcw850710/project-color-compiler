@@ -1,56 +1,70 @@
-module.exports = (_config) => new Promise((reslove, reject) => {
-  const fs = require('fs')
-  const getConfig = require('../utils/getConfig')
-  const getRgbaColor = require("../utils/getRgbaColor")
-  const getHashColor = require("../utils/getHashColor")
-  const recursiveDir = require("../utils/recursiveDir")
-  const createHash = require('../utils/createHash')
-  const getFileColors = require('../utils/getFileColors')
-  const autoImport = require('../utils/autoImport')
-  const getPathExtension = require('../utils/getPathExtension')
-  const getVueStyle = require('../utils/getVueStyle')
-  const config = getConfig(_config)
-  const {fileExtensions, compileFilePath, rootPath, compileFileType, isAutoImport} = config
-  const result = {}
-  let cacheFile = []
-  let cacheFileColors = []
-  let cacheFileLength = 0
-  let compileCurrent = 0
+import * as fs from 'fs'
+import { iOriginConfig, iComputedConfig } from '../interfaces/config'
+import getConfig from '../utils/getConfig'
+import getRgbaColor from "../utils/getRgbaColor"
+import getHashColor from "../utils/getHashColor"
+import recursiveDir from "../utils/recursiveDir"
+import createHash from '../utils/createHash'
+import getFileColors, { iFileResult, iColorJSONContent } from '../utils/getFileColors'
+import autoImport from '../utils/autoImport'
+import getPathExtension from '../utils/getPathExtension'
+import { compile as vueCompile } from '../utils/getVueStyle'
+
+interface iResultColorVariables {
+  [color: string]: string
+}
+
+interface iReslove {
+  status: number,
+  message: string
+}
+
+export default (_config: iOriginConfig): Promise<iReslove> => new Promise((reslove, reject) => {
+  const config: iComputedConfig = getConfig(_config)
+  const {fileExtensions, compileFilePath, compileFileType}: iComputedConfig = config
+  const result: {[color: string]: boolean} = {}
+  let cacheFile: string[] = []
+  let cacheFileColors: string[] | string[][] = []
+  let cacheFileLength: number = 0
+  let compileCurrent: number = 0
 
   // 倒數第二步：將變量數據創建到對應的 colors file
   const setVariableToCompileFile = async () => {
-    const resultColorVariables = {}
-    const colorsFileData = await getFileColors(compileFilePath)
-    let colorsFileResult = ''
+    const resultColorVariables: iResultColorVariables = {}
+    const colorsFileData: iFileResult = await getFileColors(compileFilePath)
+    let colorsFileResult: string = ''
     if (Object.keys(result).length) {
       // TODO 這裡判斷待修正，多餘的判斷欠砍
-      const isSass = fileExtensions['.sass'] === true
-      const isScss = fileExtensions['.scss'] === true
-      const isVue = fileExtensions['.vue'] === true
+      const isSass: boolean = fileExtensions['.sass'] === true
+      const isScss: boolean = fileExtensions['.scss'] === true
+      const isVue: boolean = fileExtensions['.vue'] === true
       if (isSass || isScss || isVue) {
         for (const color in colorsFileData) {
-          const { variable, commit } = colorsFileData[color]
-          const period = (compileFileType === 'scss' ? `;` : '') + `${commit ? ` // ${commit}` : ''}\n`
-          colorsFileResult += `$${variable}: ${color}${period}`
-          resultColorVariables[color] = `$${variable}`
-          if (result[color]) {
-            delete colorsFileData[color]
-            delete result[color]
-          } else {
-            delete colorsFileData[color]
+          const colorData: iColorJSONContent | {} = colorsFileData[color]
+          if(colorData.hasOwnProperty('variable')) {
+            const {variable, commit} = colorData as iColorJSONContent
+            const period: string = (compileFileType === 'scss' ? `;` : '') + `${commit ? ` // ${commit}` : ''}\n`
+            colorsFileResult += `$${variable}: ${color}${period}`
+            resultColorVariables[color] = `$${variable}`
+            if (result[color]) {
+              delete colorsFileData[color]
+              delete result[color]
+            } else {
+              delete colorsFileData[color]
+            }
           }
         }
         for (const color in result) {
-          const period = (compileFileType === 'scss' ? ';' : '') + '\n'
-          const noSpaceColor = color.replace(/\s/g, '')
+          const period: string = (compileFileType === 'scss' ? ';' : '') + '\n'
+          const noSpaceColor: string = color.replace(/\s/g, '')
           if(colorsFileData[noSpaceColor]) {
-            const { variable } = colorsFileData[noSpaceColor]
+            const { variable } = colorsFileData[noSpaceColor] as iColorJSONContent
             colorsFileResult += `$${variable}: ${noSpaceColor}${period}`
             resultColorVariables[noSpaceColor] = `$${variable}`
             delete colorsFileData[noSpaceColor]
             delete result[color]
           } else if(!resultColorVariables[noSpaceColor]) {
-            const variable = createHash()
+            const variable: string = createHash()
             colorsFileResult += `$${variable}: ${noSpaceColor}${period}`
             resultColorVariables[noSpaceColor] = `$${variable}`
             delete result[color]
@@ -67,30 +81,34 @@ module.exports = (_config) => new Promise((reslove, reject) => {
   }
 
   // 最後一部：遍歷所有 file，將顏色轉成變量
-  const transformAllFilesColorToVariable = (resultColorVariables) => {
-    let endIndex = 0
+  const transformAllFilesColorToVariable = (resultColorVariables: iResultColorVariables) => {
+    let endIndex: number = 0
     // 將數據轉成顏色最長的在前
-    const flatAndSortColorsFromStringLength = colors => colors.reduce((prev, color) => typeof color === 'string' ? [...prev, color] : [...prev, ...color], []).sort((a, b) => b.length > a.length ? 1 : -1)
-    cacheFile.forEach((path, index) => {
-      fs.readFile(path, (err, data) => {
-        const extension = getPathExtension(path)
-        const isVueFile = extension === 'vue'
-        let fileData = data.toString()
+    const flatAndSortColorsFromStringLength: (colors: string[] | string[][]) => string[] = colors => colors.reduce((prev: string[], color: string[] | string) => typeof color === 'string' ? [...prev, color] : [...prev, ...color], []).sort((a, b) => b.length > a.length ? 1 : -1)
+    cacheFile.forEach((path: string, index: number) => {
+      fs.readFile(path, (err, data: Buffer) => {
+        const extension: string = getPathExtension(path)
+        const isVueFile: boolean = extension === 'vue'
+        let fileData: string = data.toString()
         let { styleTagStartIndex: vueStyleTagStartIndex,
           styleTagEndIndex: vueStyleTagEndIndex,
           styleData: vueStyleData
-        } = isVueFile ? getVueStyle.compile(fileData) : {}
-        let fileResult = ''
+        } = isVueFile ? vueCompile(fileData) : {
+          styleTagStartIndex: null,
+          styleTagEndIndex: null,
+          styleData: null
+        }
+        let fileResult: string = ''
         flatAndSortColorsFromStringLength(cacheFileColors[index]).forEach((color) => {
           if (isVueFile) {
-            vueStyleData = vueStyleData.split(color).join(resultColorVariables[color.replace(/\s/g, '')])
+            vueStyleData = (vueStyleData as string).split(color).join(resultColorVariables[color.replace(/\s/g, '')])
           } else {
             fileData = fileData.split(color).join(resultColorVariables[color.replace(/\s/g, '')])
           }
         })
         if (isVueFile) {
           vueStyleData = autoImport(extension, path, vueStyleData, config)
-          fileResult = fileData.substring(vueStyleTagStartIndex, 0) + vueStyleData + fileData.substring(vueStyleTagEndIndex)
+          fileResult = fileData.substring((vueStyleTagStartIndex as number), 0) + vueStyleData + fileData.substring(vueStyleTagEndIndex as number)
         } else {
           fileData = autoImport(extension, path, fileData, config)
           fileResult = fileData
@@ -108,15 +126,17 @@ module.exports = (_config) => new Promise((reslove, reject) => {
   }
 
   // 將遍歷到的 file 路徑及顏色緩存起來，到最後一步遍歷 file 時可以提速
-  const recordCacheData = (path, colors) => {
+  const recordCacheData = (path: string, colors) => {
     if (path !== compileFilePath && colors.size > 0) {
-      const setToColors = [...colors]
-      const uniqueColors = {}
+      const setToColors: string[] = [...colors]
+      const uniqueColors: {
+        [color: string]: string[] | string
+      } = {}
       setToColors.forEach(color => {
         if (/rgba/.test(color) === true) {
           const noSpaceColor = color.replace(/\s/g, '')
           if (uniqueColors[noSpaceColor] !== undefined) {
-            uniqueColors[noSpaceColor].push(color)
+            (uniqueColors[noSpaceColor] as string[]).push(color)
           } else {
             uniqueColors[noSpaceColor] = [color]
           }
@@ -130,20 +150,21 @@ module.exports = (_config) => new Promise((reslove, reject) => {
   }
 
   // 將遍歷到的 fileData 轉成 Set(cache) 及 json(result) 格式，好讓後面調用
-  const compiler = (input, path, fileName) => {
-    const inputLen = input.length
-    const isVue = getPathExtension(path) === 'vue'
-    let cur = 0
+  const compiler = (input: string, path: string, fileName?: string) => {
+    const inputLen: number = input.length
+    const isVue: boolean = getPathExtension(path) === 'vue'
+    let cur: number = 0
+    //: Set<string>
     let colors = new Set()
-    let styleTagStartIndex = 0
-    let styleTagEndIndex = 0
-    let hasVueStyleTag = false
-    const whileCondition = () => isVue ? cur > styleTagStartIndex && cur < styleTagEndIndex && hasVueStyleTag === true : cur < input.length
+    let styleTagStartIndex: number = 0
+    let styleTagEndIndex: number = 0
+    let hasVueStyleTag: boolean = false
+    const whileCondition: () => boolean = () => isVue ? cur > styleTagStartIndex && cur < styleTagEndIndex && hasVueStyleTag === true : cur < input.length
       // 如果是 vue 檔，跑一波初始值定義
-    ;(function initCurIndex () {
+    ;(function initCurIndex (): void {
       if(isVue) {
         // 從 style tag 裡開始計算
-        const {styleTagStartIndex: _styleTagStartIndex, styleTagEndIndex: _styleTagEndIndex} = getVueStyle.compile(input)
+        const {styleTagStartIndex: _styleTagStartIndex, styleTagEndIndex: _styleTagEndIndex} = vueCompile(input)
         styleTagStartIndex = _styleTagStartIndex
         styleTagEndIndex = _styleTagEndIndex
         cur = styleTagStartIndex + 1

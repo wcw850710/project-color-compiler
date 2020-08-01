@@ -1,9 +1,9 @@
 const fs = require('fs')
-const recursiveDir = require('../utils/recursiveDir')
-const getConfig = require('../utils/getConfig')
-const createHash = require('../utils/createHash')
+import recursiveDir from '../utils/recursiveDir'
+import getConfig from '../utils/getConfig'
+import createHash from '../utils/createHash'
 // const getColorJSON = require('../utils/getColorJSON')
-module.exports = async (req, res) => {
+export default async (req, res) => {
   const { config, colors } = req.body
   const _config = getConfig(config)
   const { compileFilePath, compileFileType } = _config

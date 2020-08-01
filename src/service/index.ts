@@ -1,8 +1,8 @@
-const express = require('express');
+import * as express from 'express'
+import * as router from './routes'
+import * as multer from 'multer'
 const app = express();
-const router = require('./routes')
-const multer = require('multer');
-const upload = multer();
+const upload = multer()
 
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded

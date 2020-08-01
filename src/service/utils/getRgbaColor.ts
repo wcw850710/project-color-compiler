@@ -1,4 +1,4 @@
-module.exports = (input, index, returnIndexCallback) => {
+export default (input, index, returnIndexCallback) => {
   let color = ''
   let rgba = ['r', 'g', 'b', 'a']
   let rgbaCur = 0

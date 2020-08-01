@@ -1,10 +1,17 @@
-const path = require('path')
-const fs = require('fs')
-module.exports = filePath => new Promise(async (reslove) => {
+import * as path from 'path'
+import * as fs from 'fs'
+
+interface iFolders {
+  name: string
+  extensions: string
+  isDirectory: boolean
+}
+
+export default filePath => new Promise(async (reslove) => {
   const absPath = path.resolve(filePath)
   try {
     const paths = await fs.readdirSync(absPath)
-    const folders = []
+    const folders: iFolders[] = []
     // .map(f => ({ name: f, extensions: path.extname(f), isDirectory: fs.lstatSync(filePath + f).isDirectory()}))
     paths.forEach(function (filename, index) {
       const filedir = path.resolve(filePath, filename);

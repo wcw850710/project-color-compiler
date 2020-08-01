@@ -1,9 +1,25 @@
-const fs = require('fs')
-const path = require('path')
-const recursiveDir = (config, readFileBeforeCallback, readFileCallback) => {
+import * as fs from 'fs'
+import * as path from 'path'
+import { iComputedConfig } from '../interfaces/config'
+
+interface iReadFileBeforeCallback {
+  (): void
+}
+
+interface iReadFileCallback {
+  (fileName: string, filePath: string, fileData: string): void
+}
+
+interface iRecursiveDir {
+  (config: iComputedConfig,
+   readFileBeforeCallback: iReadFileBeforeCallback,
+   readFileCallback: iReadFileCallback): void
+}
+
+const recursiveDir: iRecursiveDir = (config, readFileBeforeCallback, readFileCallback) => {
   const { rootPath, compileFile, fileExtensions } = config
-  fs.readdir(rootPath, (err, files) => {
-    files.forEach((fileName) => {
+  fs.readdir(rootPath, (err, files: string[]) => {
+    files.forEach((fileName: string) => {
       const newPath = rootPath + fileName
       const fileExtensionName = path.extname(fileName)
       const isFolder = fs.lstatSync(rootPath + fileName).isDirectory()
@@ -20,4 +36,5 @@ const recursiveDir = (config, readFileBeforeCallback, readFileCallback) => {
     })
   })
 }
-module.exports = recursiveDir
+
+export default recursiveDir

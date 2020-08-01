@@ -1,0 +1,22 @@
+{
+  "name": "css-color-2-sass-compiler",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "scripts": {
+    "build:service": "webpack --mode production",
+    "start:service": "webpack --mode development --watch"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "multer": "^1.4.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.7",
+    "@types/multer": "^1.4.3",
+    "@types/node": "^14.0.27",
+    "ts-loader": "^8.0.1",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  }
+}
