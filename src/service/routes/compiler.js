@@ -131,9 +131,10 @@ module.exports = (_config) => new Promise((reslove, reject) => {
 
   // 將遍歷到的 fileData 轉成 Set(cache) 及 json(result) 格式，好讓後面調用
   const compiler = (input, path, fileName) => {
+    const inputLen = input.length
+    const isVue = getPathExtension(path) === 'vue'
     let cur = 0
     let colors = new Set()
-    const isVue = getPathExtension(path) === 'vue'
     let styleTagStartIndex = 0
     let styleTagEndIndex = 0
     let hasVueStyleTag = false
@@ -153,7 +154,7 @@ module.exports = (_config) => new Promise((reslove, reject) => {
       const txt = input[cur]
       if (txt === ':') {
         cur++
-        while (/[\n;\{]/.test(input[cur]) === false) {
+        while (/[\n;\{]/.test(input[cur]) === false && cur < input.length) {
           if (input[cur] === '#') {
             const [color, isHashColor] = getHashColor(input, cur, index => (cur = index))
             if (isHashColor) {

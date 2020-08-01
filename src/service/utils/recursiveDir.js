@@ -7,7 +7,7 @@ const recursiveDir = (config, readFileBeforeCallback, readFileCallback) => {
       const newPath = rootPath + fileName
       const fileExtensionName = path.extname(fileName)
       const isFolder = fs.lstatSync(rootPath + fileName).isDirectory()
-      if (fileExtensions[fileExtensionName] && fileName !== compileFile) {
+      if (fileExtensions[fileExtensionName] && fileName !== compileFile && fileName !== 'variables.scss' && newPath.indexOf('vue-sidebar-menu') === -1) {
         readFileBeforeCallback()
         fs.readFile(newPath, (err, data) => {
           const fileData = data.toString()

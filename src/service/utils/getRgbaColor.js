@@ -4,6 +4,7 @@ module.exports = (input, index, returnIndexCallback) => {
   let rgbaCur = 0
   let startBracketsLen = 0
   let endBracketsLen = 0
+  let isRgba = false
   while(input[index] !== undefined && input[index] === rgba[rgbaCur]) {
     color += input[index]
     index++
@@ -11,16 +12,24 @@ module.exports = (input, index, returnIndexCallback) => {
   }
   if(rgbaCur < 4) {
     returnIndexCallback(index)
-    return ['', false]
+    return ['', isRgba]
   } else {
     while(input[index] !== undefined){
-      if(input[index] === '(') startBracketsLen++
-      if(input[index] === ')') endBracketsLen++
-      color+=input[index]
+      const txt = input[index]
+      if(txt === '(') startBracketsLen++
+      if(txt === ')') endBracketsLen++
+      color+=txt
       index++
-      if(endBracketsLen === startBracketsLen) break
+      // if(txt === '$') {
+      //   isRgba = false
+      //   break
+      // }
+      if(endBracketsLen === startBracketsLen) {
+        isRgba = true
+        break
+      }
     }
     returnIndexCallback(index)
-    return [color, true]
+    return [color, isRgba]
   }
 }
