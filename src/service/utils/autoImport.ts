@@ -1,7 +1,8 @@
 import getToColorFilePath from './getToColorFilePath'
 import { matchVueStartStyleTag } from './getVueStyle'
 
-export default (extension, filePath, fileData, config) => {
+
+export default (extension: string, filePath: string, fileData: string, config): string => {
   const {isAutoImport, compileFileName, compileFileType} = config
   if(isAutoImport === true) {
     const isImportedColor = new RegExp(`@import\\s?['"]+.*${compileFileName}(\\.s[ac]ss)?['"]+[;\\s]*$`, 'gm').test(fileData)
@@ -9,9 +10,11 @@ export default (extension, filePath, fileData, config) => {
       const isVueFile = extension === 'vue'
       const importSentence = `@import '${getToColorFilePath(filePath, config)}'${(extension === 'scss' || isVueFile && compileFileType === 'scss') ? ';' : ''}\n`
       if(extension === 'vue') {
-        const matchStyleTag = fileData.match(matchVueStartStyleTag)
+        const matchStyleTag: RegExpMatchArray | null = fileData.match(matchVueStartStyleTag)
+        if(matchStyleTag !== null) {
         const [styleTag] = matchStyleTag
-        fileData = fileData.replace(styleTag, styleTag + '\n' + importSentence)
+          fileData = fileData.replace(styleTag, styleTag + '\n' + importSentence)
+        }
       } else {
         fileData = importSentence + fileData
       }

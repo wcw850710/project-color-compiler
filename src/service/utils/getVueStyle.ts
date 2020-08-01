@@ -1,4 +1,4 @@
-interface iVueData {
+export interface iVueData {
   styleTagStartIndex: number
   styleTagEndIndex: number
   styleData: string

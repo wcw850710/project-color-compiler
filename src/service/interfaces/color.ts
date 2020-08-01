@@ -1,0 +1,1 @@
+export type iGetColor = [string, boolean]

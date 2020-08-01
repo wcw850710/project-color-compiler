@@ -20,34 +20,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="80c5fbb4-46cc-4ec6-80e5-edb492559a19" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/service/interfaces/config.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/service/tsconfig.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/service/webpack.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/routes/compiler.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/routes/compiler.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/routes/downloadProjects.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/routes/downloadProjects.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/routes/getColors.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/routes/getColors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/routes/getFilePath.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/routes/getFilePath.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/routes/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/routes/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/routes/translateColorsAndVariables.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/routes/translateColorsAndVariables.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/utils/autoImport.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/autoImport.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/utils/createHash.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/createHash.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/utils/getAbsPath.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/getAbsPath.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/utils/getColorJSON.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/getColorJSON.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/utils/getConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/getConfig.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/utils/getFileColors.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/getFileColors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/utils/getHashColor.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/getHashColor.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/utils/getPathExtension.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/getPathExtension.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/utils/getRgbaColor.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/getRgbaColor.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/utils/getStyleName.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/getStyleName.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/utils/getToColorFilePath.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/getToColorFilePath.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/utils/getVueStyle.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/getVueStyle.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/utils/recursiveDir.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/recursiveDir.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn-error.log" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/yarn-error.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/yarn.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/service/interfaces/color.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/src/views/home.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/src/views/home.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/routes/compiler.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/routes/compiler.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/routes/downloadProjects.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/routes/downloadProjects.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/routes/getColors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/routes/getColors.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/routes/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/routes/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/utils/autoImport.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/autoImport.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/utils/getHashColor.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/getHashColor.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/utils/getRgbaColor.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/getRgbaColor.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/utils/getVueStyle.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/utils/getVueStyle.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/webpack.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/yarn-error.log" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/yarn-error.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,7 +89,17 @@
       <recent name="C:\Users\wcw85\desk\code\ws-projects\sass-colors-compiler\test\styles" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.start:service">
+  <component name="RunManager" selected="npm.start:gui">
+    <configuration name="build:service" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/src/service/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="build:service" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <configuration name="start:gui" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/src/gui/package.json" />
       <command value="run" />
@@ -123,11 +123,13 @@
     <list>
       <item itemvalue="npm.start:gui" />
       <item itemvalue="npm.start:service" />
+      <item itemvalue="npm.build:service" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="npm.start:service" />
         <item itemvalue="npm.start:gui" />
+        <item itemvalue="npm.build:service" />
+        <item itemvalue="npm.start:service" />
       </list>
     </recent_temporary>
   </component>
@@ -159,28 +161,7 @@
       <workItem from="1596214669199" duration="44000" />
       <workItem from="1596214812980" duration="11000" />
       <workItem from="1596282032606" duration="1602000" />
-      <workItem from="1596283908916" duration="5477000" />
-    </task>
-    <task id="LOCAL-00019" summary="取得顏色拉出成功有方法，並且增加取得註解及取得顏色 restful">
-      <created>1595505445649</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1595505445649</updated>
-    </task>
-    <task id="LOCAL-00020" summary="新增交互轉換可以保留顏色註解">
-      <created>1595506098966</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1595506098966</updated>
-    </task>
-    <task id="LOCAL-00021" summary="錯誤的 pixels 讀取">
-      <created>1595511015770</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1595511015770</updated>
+      <workItem from="1596283908916" duration="11204000" />
     </task>
     <task id="LOCAL-00022" summary="新增圖像顏色讀取">
       <created>1595513172639</created>
@@ -504,7 +485,28 @@
       <option name="project" value="LOCAL" />
       <updated>1596214211783</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="service 架構轉換中(換位置及轉 ts)">
+      <created>1596291228627</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1596291228627</updated>
+    </task>
+    <task id="LOCAL-00069" summary="dist 移除">
+      <created>1596291257056</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1596291257056</updated>
+    </task>
+    <task id="LOCAL-00070" summary="新增 dist ignore">
+      <created>1596291273136</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1596291273136</updated>
+    </task>
+    <option name="localTasksCounter" value="71" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -533,9 +535,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="黑夜模式覆蓋增加及自動引入加上副檔名" />
-    <MESSAGE value="加入 vue style 編譯(盲寫未測試)" />
-    <MESSAGE value="修正 vue style 寫入(盲寫僅測試一次)" />
     <MESSAGE value="footer 黑暗模式" />
     <MESSAGE value="編輯路徑無效錯誤修正" />
     <MESSAGE value="移除測試代碼" />
@@ -558,7 +557,10 @@
     <MESSAGE value="rgba 顏色抓取正則錯誤修正" />
     <MESSAGE value="優化代碼結構及 extension 禁用規則並開啟 t/js 選項" />
     <MESSAGE value="查找類型 t/js disabled -&gt; v-if" />
-    <option name="LAST_COMMIT_MESSAGE" value="查找類型 t/js disabled -&gt; v-if" />
+    <MESSAGE value="service 架構轉換中(換位置及轉 ts)" />
+    <MESSAGE value="dist 移除" />
+    <MESSAGE value="新增 dist ignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="新增 dist ignore" />
   </component>
   <component name="WindowStateProjectService">
     <state x="573" y="0" key="#HTML" timestamp="1595333331840">
@@ -589,10 +591,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="577" y="120" key="#Vue/0.0.1536.824@0.0.1536.824" timestamp="1596000085378" />
-    <state x="223" y="60" width="1089" height="764" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1596283005587">
+    <state x="223" y="35" width="1089" height="789" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1596296369599">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="223" y="60" width="1089" height="764" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824@0.0.1536.824" timestamp="1596283005587" />
+    <state x="223" y="35" width="1089" height="789" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824@0.0.1536.824" timestamp="1596296369599" />
     <state x="515" y="213" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1596113944818">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -614,26 +616,26 @@
     </state>
     <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824/-1920.8.1920.1040@0.0.1536.824" timestamp="1595402151465" />
     <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1596283002618" />
-    <state width="387" height="336" key="GridCell.Tab.0.bottom" timestamp="1596283897486">
+    <state width="434" height="213" key="GridCell.Tab.0.bottom" timestamp="1596296445770">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="367" height="337" key="GridCell.Tab.0.bottom/0.0.1536.824/-1920.8.1920.1040@0.0.1536.824" timestamp="1596075780344" />
-    <state width="387" height="336" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1596283897486" />
-    <state width="387" height="336" key="GridCell.Tab.0.center" timestamp="1596283897486">
+    <state width="434" height="213" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1596296445770" />
+    <state width="434" height="213" key="GridCell.Tab.0.center" timestamp="1596296445770">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="367" height="337" key="GridCell.Tab.0.center/0.0.1536.824/-1920.8.1920.1040@0.0.1536.824" timestamp="1596075780344" />
-    <state width="387" height="336" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1596283897486" />
-    <state width="387" height="336" key="GridCell.Tab.0.left" timestamp="1596283897486">
+    <state width="434" height="213" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1596296445770" />
+    <state width="434" height="213" key="GridCell.Tab.0.left" timestamp="1596296445770">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="367" height="337" key="GridCell.Tab.0.left/0.0.1536.824/-1920.8.1920.1040@0.0.1536.824" timestamp="1596075780344" />
-    <state width="387" height="336" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1596283897486" />
-    <state width="387" height="336" key="GridCell.Tab.0.right" timestamp="1596283897486">
+    <state width="434" height="213" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1596296445770" />
+    <state width="434" height="213" key="GridCell.Tab.0.right" timestamp="1596296445770">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="367" height="337" key="GridCell.Tab.0.right/0.0.1536.824/-1920.8.1920.1040@0.0.1536.824" timestamp="1596075780344" />
-    <state width="387" height="336" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1596283897486" />
+    <state width="434" height="213" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1596296445770" />
     <state width="1493" height="261" key="GridCell.Tab.1.bottom" timestamp="1596124568041">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -682,21 +684,21 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1493" height="261" key="GridCell.Tab.3.right/0.0.1536.824@0.0.1536.824" timestamp="1596124568042" />
-    <state x="510" y="114" key="RollbackChangesDialog" timestamp="1596212231792">
+    <state x="510" y="114" key="RollbackChangesDialog" timestamp="1596295997436">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="510" y="114" key="RollbackChangesDialog/0.0.1536.824/-1920.8.1920.1040@0.0.1536.824" timestamp="1595255818748" />
-    <state x="510" y="114" key="RollbackChangesDialog/0.0.1536.824@0.0.1536.824" timestamp="1596212231792" />
+    <state x="510" y="114" key="RollbackChangesDialog/0.0.1536.824@0.0.1536.824" timestamp="1596295997436" />
     <state x="270" y="57" key="SettingsEditor" timestamp="1596208384066">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="270" y="57" key="SettingsEditor/0.0.1536.824/-1920.8.1920.1040@0.0.1536.824" timestamp="1595381051505" />
     <state x="270" y="57" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1596208384066" />
-    <state x="361" y="145" key="Vcs.Push.Dialog.v2" timestamp="1596214213076">
+    <state x="361" y="145" key="Vcs.Push.Dialog.v2" timestamp="1596291236658">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="361" y="145" key="Vcs.Push.Dialog.v2/0.0.1536.824/-1920.8.1920.1040@0.0.1536.824" timestamp="1595381193766" />
-    <state x="361" y="145" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1596214213076" />
+    <state x="361" y="145" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1596291236658" />
     <state x="571" y="325" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1596282041340">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -705,19 +707,23 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="721" y="0" width="656" height="810" key="dock-window-1/0.0.1536.824/-1920.8.1920.1040@0.0.1536.824" timestamp="1595255650355" />
-    <state x="468" y="10" width="599" height="804" key="find.popup" timestamp="1596289385372">
+    <state x="468" y="10" width="599" height="804" key="find.popup" timestamp="1596296303313">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="468" y="10" width="599" height="804" key="find.popup/0.0.1536.824/-1920.8.1920.1040@0.0.1536.824" timestamp="1595381103803" />
-    <state x="468" y="10" width="599" height="804" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1596289385372" />
+    <state x="468" y="10" width="599" height="804" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1596296303313" />
     <state x="410" y="139" width="700" height="530" key="recent.locations.popup" timestamp="1595476688250">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="410" y="139" width="700" height="530" key="recent.locations.popup/0.0.1536.824@0.0.1536.824" timestamp="1595476688250" />
-    <state x="425" y="66" width="672" height="676" key="search.everywhere.popup" timestamp="1596286382487">
+    <state x="425" y="187" key="run.anything.popup" timestamp="1596293078896">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="425" y="187" key="run.anything.popup/0.0.1536.824@0.0.1536.824" timestamp="1596293078896" />
+    <state x="425" y="66" width="672" height="676" key="search.everywhere.popup" timestamp="1596293152180">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="425" y="66" width="672" height="676" key="search.everywhere.popup/0.0.1536.824/-1920.8.1920.1040@0.0.1536.824" timestamp="1595381401965" />
-    <state x="425" y="66" width="672" height="676" key="search.everywhere.popup/0.0.1536.824@0.0.1536.824" timestamp="1596286382487" />
+    <state x="425" y="66" width="672" height="676" key="search.everywhere.popup/0.0.1536.824@0.0.1536.824" timestamp="1596293152180" />
   </component>
 </project>

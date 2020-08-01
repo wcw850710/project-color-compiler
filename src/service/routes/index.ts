@@ -6,7 +6,7 @@ import compiler from './compiler'
 import getColors from './getColors'
 import getFilePath from './getFilePath'
 import translateColorsAndVariables from './translateColorsAndVariables'
-import downloadProjects from './downloadProjects'
+import { before as beforeDownloadProjectsJSON, download as downloadProjectsJSON } from './downloadProjects'
 
 // (主要 API) 交叉編輯
 router.post('/compiler', async (req, res) => {
@@ -66,8 +66,8 @@ router.get('/getFilePath', async (req, res) => {
 })
 
 // 匯出專案 json
-router.post('/beforeDownload', downloadProjects.before)
-router.get('/download', downloadProjects.download)
+router.post('/beforeDownload', beforeDownloadProjectsJSON)
+router.get('/download', downloadProjectsJSON)
 
 // 匯入專案
 router.post('/importProject', (req, res) => {

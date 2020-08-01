@@ -422,7 +422,7 @@
           })).data.data
           window.open(`/api/download?fileName=${fileName}`)
         }catch (err) {
-          this.$notify.success({
+          this.$notify.error({
             title: '匯出數據失敗',
             message: '你不會知道是怎麼了'
           })

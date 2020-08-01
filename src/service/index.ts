@@ -1,6 +1,6 @@
 import * as express from 'express'
-import * as router from './routes'
 import * as multer from 'multer'
+import router from './routes'
 const app = express();
 const upload = multer()
 

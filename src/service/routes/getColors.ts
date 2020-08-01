@@ -1,16 +1,21 @@
 import getFileColors from '../utils/getFileColors'
 import getConfig from '../utils/getConfig'
+import { iComputedConfig } from "../interfaces/config";
+import { iFileResult, iColorJSONContent } from "../utils/getFileColors";
 
 export default async (req, res) => {
   const { config } = req.body
-  const { compileFilePath } = getConfig(config)
-  const colorJson = await getFileColors(compileFilePath)
-  const colors = []
+  const { compileFilePath }: iComputedConfig = getConfig(config)
+  const colorJson: iFileResult = await getFileColors(compileFilePath)
+  const colors: {color: string, variable: string, commit: string}[] = []
   for (const color in colorJson) {
-    const { variable, commit } = colorJson[color]
-    colors.push({
-      color, variable, commit
-    })
+    const cJSON: {} | iColorJSONContent = colorJson[color]
+    if(cJSON.hasOwnProperty('variable') === true) {
+      const {variable, commit}: iColorJSONContent = colorJson[color] as iColorJSONContent
+      colors.push({
+        color, variable, commit
+      })
+    }
   }
   res.status(200).send({
     message: '取得顏色成功',

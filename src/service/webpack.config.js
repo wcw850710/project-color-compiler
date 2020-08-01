@@ -1,19 +1,21 @@
+var path = require('path');
+
 module.exports = {
   entry: './index.ts',
-  plugins: [],
+  target: 'node',
+  output: {
+    filename: 'index.js',
+    path: path.resolve(__dirname, 'dist')
+  },
+  devtool: 'source-map',
+  resolve: {
+    // Add `.ts` and `.tsx` as a resolvable extension.
+    extensions: ['.ts', '.tsx', '.js']
+  },
   module: {
     rules: [
-      {
-        test: /\.ts$/,
-        loader: 'ts-loader'
-      }
+      // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
+      { test: /\.tsx?$/, loader: 'ts-loader' }
     ]
-  },
-  resolve: {
-    extensions: ['.ts', '.js']
-  },
-  output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
-  },
+  }
 };

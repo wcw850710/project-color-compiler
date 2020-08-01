@@ -1,4 +1,5 @@
-export default (input, index, returnIndexCallback) => {
+import { iGetColor } from '../interfaces/color'
+export default (input: string, index: number, returnIndexCallback: (index: number) => void): iGetColor => {
   let color = ''
   let rgba = ['r', 'g', 'b', 'a']
   let rgbaCur = 0
