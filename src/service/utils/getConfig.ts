@@ -1,15 +1,16 @@
-import { iOriginConfig, iComputedConfig } from '../interfaces/config'
+import {iComputedConfig, iOriginConfig} from '../interfaces/config'
 
-const formatPath = path => path[path.length - 1] !== '/' ? path + '/' : path
-
-export default (config): iComputedConfig => {
+const formatPath = (path: string): string => path[path.length - 1] !== '/' ? path + '/' : path
+interface iFileExtensions {
+  [extension: string]: boolean
+}
+export default (config: iOriginConfig): iComputedConfig => {
   const {fileExtensions, rootPath, compilePath, compileFile, isAutoImport}: iOriginConfig = config
-  const _fileExtensions = fileExtensions.reduce((p, e) => ({...p, [`.${e}`]: true}), {})
-  const _rootPath = formatPath(rootPath)
-  const _compilePath = formatPath(compilePath)
-  const _compileFile = compileFile.join('.')
-  const _compileFilePath = _compilePath + _compileFile
-  const _isAutoImport = isAutoImport
+  const _fileExtensions: iFileExtensions = fileExtensions.reduce((p, e) => ({...p, [`.${e}`]: true}), {})
+  const _rootPath: string = formatPath(rootPath)
+  const _compilePath: string = formatPath(compilePath)
+  const _compileFile: string = compileFile.join('.')
+  const _compileFilePath: string = _compilePath + _compileFile
   return {
     fileExtensions: _fileExtensions,
     rootPath: _rootPath,
@@ -18,6 +19,6 @@ export default (config): iComputedConfig => {
     compileFileName: compileFile[0],
     compileFileType: compileFile[1],
     compileFilePath: _compileFilePath,
-    isAutoImport: _isAutoImport,
+    isAutoImport: isAutoImport,
   }
 }

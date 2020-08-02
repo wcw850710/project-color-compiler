@@ -1,11 +1,11 @@
 import { iGetColor } from '../interfaces/color'
 export default (input: string, index: number, returnIndexCallback: (index: number) => void): iGetColor => {
-  let color = ''
-  let rgba = ['r', 'g', 'b', 'a']
-  let rgbaCur = 0
-  let startBracketsLen = 0
-  let endBracketsLen = 0
-  let isRgba = false
+  let color: string = ''
+  let rgba: string[] = ['r', 'g', 'b', 'a']
+  let rgbaCur: number = 0
+  let startBracketsLen: number = 0
+  let endBracketsLen: number = 0
+  let isRgba: boolean = false
   while(input[index] !== undefined && input[index] === rgba[rgbaCur]) {
     color += input[index]
     index++
@@ -16,7 +16,7 @@ export default (input: string, index: number, returnIndexCallback: (index: numbe
     return ['', isRgba]
   } else {
     while(input[index] !== undefined){
-      const txt = input[index]
+      const txt: string = input[index]
       if(txt === '(') startBracketsLen++
       if(txt === ')') endBracketsLen++
       color+=txt

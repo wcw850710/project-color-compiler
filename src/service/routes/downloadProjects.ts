@@ -1,8 +1,9 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import createHash from '../utils/createHash'
+import {iExpressRoute} from "../interfaces/route";
 
-export const before = (req, res) => {
+export const before: iExpressRoute = (req, res) => {
   const { data }: { data: string } = req.body
   const hashFileName: string = `export-${createHash()}.json`
   const filePath: string = path.relative('./', `export-projects-cache/${hashFileName}`)
@@ -20,7 +21,7 @@ export const before = (req, res) => {
     })
   }
 }
-export const download = (req, res) => {
+export const download: iExpressRoute = (req, res) => {
   const filePath = path.relative('./', `export-projects-cache/${req.query.fileName}`)
   res.download(filePath, `專案顏色數據.json`, err => {
     if(err) {

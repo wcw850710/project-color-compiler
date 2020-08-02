@@ -10,6 +10,7 @@ import autoImport from '../utils/autoImport'
 import getPathExtension from '../utils/getPathExtension'
 import {compile as vueCompile, iVueData} from '../utils/getVueStyle'
 import {iGetColor} from "../interfaces/color";
+import {iExpressRoute} from "../interfaces/route";
 
 interface iResultColorVariables {
   [color: string]: string
@@ -20,12 +21,14 @@ interface iReslove {
   message: string
 }
 
-export default (_config: iOriginConfig): Promise<iReslove> => new Promise((reslove, reject) => {
+type iColors = string | string[]
+
+const compiler =  (_config: iOriginConfig): Promise<iReslove> => new Promise((reslove, reject) => {
   const config: iComputedConfig = getConfig(_config)
   const {fileExtensions, compileFilePath, compileFileType}: iComputedConfig = config
   const result: { [color: string]: boolean } = {}
   let cacheFile: string[] = []
-  let cacheFileColors: (string | string[])[] = []
+  let cacheFileColors: iColors[][] = []
   let cacheFileLength: number = 0
   let compileCurrent: number = 0
 
@@ -85,9 +88,11 @@ export default (_config: iOriginConfig): Promise<iReslove> => new Promise((reslo
   const transformAllFilesColorToVariable = (resultColorVariables: iResultColorVariables) => {
     let endIndex: number = 0
     // 將數據轉成顏色最長的在前
-    const flatAndSortColorsFromStringLength = (colors) => colors.reduce((prev, color) => typeof color === 'string' ? [...prev, color] : [...prev, ...color], []).sort((a, b) => b.length > a.length ? 1 : -1)
+    const flatAndSortColorsFromStringLength = (colors: iColors[]): string[] =>
+      colors.reduce<string[]>((prev: string[], color: iColors) => typeof color === 'string' ? [...prev, color] : [...prev, ...color], [])
+        .sort((a, b) => b.length > a.length ? 1 : -1)
     cacheFile.forEach((path: string, index: number) => {
-      fs.readFile(path, (err, data: Buffer) => {
+      fs.readFile(path, (_, data: Buffer) => {
         const extension: string = getPathExtension(path)
         const isVueFile: boolean = extension === 'vue'
         let fileData: string = data.toString()
@@ -130,10 +135,9 @@ export default (_config: iOriginConfig): Promise<iReslove> => new Promise((reslo
   // 將遍歷到的 file 路徑及顏色緩存起來，到最後一步遍歷 file 時可以提速
   const recordCacheData = (path: string, colors: Set<string>) => {
     if (path !== compileFilePath && colors.size > 0) {
-      // @ts-ignore
       const setToColors: string[] = [...colors]
       const uniqueColors: {
-        [color: string]: string[] | string
+        [color: string]: iColors
       } = {}
       setToColors.forEach(color => {
         if (/rgba/.test(color) === true) {
@@ -148,16 +152,14 @@ export default (_config: iOriginConfig): Promise<iReslove> => new Promise((reslo
         }
       })
       cacheFile.push(path)
-      // @ts-ignore
       cacheFileColors.push(Object.values(uniqueColors))
     }
   }
 
   // 將遍歷到的 fileData 轉成 Set(cache) 及 json(result) 格式，好讓後面調用
-  const compiler = (input: string, path: string, fileName?: string) => {
+  const compiler = (input: string, path: string) => {
     const isVue: boolean = getPathExtension(path) === 'vue'
     let cur: number = 0
-    //: Set<string>
     let colors: Set<string> = new Set()
     let styleTagStartIndex: number = 0
     let styleTagEndIndex: number = 0
@@ -206,7 +208,7 @@ export default (_config: iOriginConfig): Promise<iReslove> => new Promise((reslo
   }
 
   // 循環遍歷所有檔案，跟路徑從 rootPath 開始
-  recursiveDir(config, () => cacheFileLength++, (fileName, path, data) => compiler(data, path))
+  recursiveDir(config, () => cacheFileLength++, (_, path, data) => compiler(data, path))
 
   setTimeout(() => {
     if (compileCurrent === 0) {
@@ -214,3 +216,15 @@ export default (_config: iOriginConfig): Promise<iReslove> => new Promise((reslo
     }
   }, 2000)
 })
+
+
+const exportCompiler: iExpressRoute = async (req, res) => {
+  const { config } = req.body as { config: iOriginConfig }
+  const { status, message } = await compiler(config)
+  res.status(status).send({
+    message: message,
+    data: null
+  })
+}
+
+export default exportCompiler

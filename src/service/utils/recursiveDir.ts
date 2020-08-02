@@ -17,16 +17,16 @@ interface iRecursiveDir {
 }
 
 const recursiveDir: iRecursiveDir = (config, readFileBeforeCallback, readFileCallback) => {
-  const { rootPath, compileFile, fileExtensions } = config
-  fs.readdir(rootPath, (err, files: string[]) => {
+  const { rootPath, compileFile, fileExtensions }: iComputedConfig = config
+  fs.readdir(rootPath, (_, files: string[]) => {
     files.forEach((fileName: string) => {
-      const newPath = rootPath + fileName
-      const fileExtensionName = path.extname(fileName)
-      const isFolder = fs.lstatSync(rootPath + fileName).isDirectory()
+      const newPath: string = rootPath + fileName
+      const fileExtensionName: string = path.extname(fileName)
+      const isFolder: boolean = fs.lstatSync(rootPath + fileName).isDirectory()
       if (fileExtensions[fileExtensionName] && fileName !== compileFile && fileName !== 'variables.scss' && newPath.indexOf('vue-sidebar-menu') === -1) {
         readFileBeforeCallback()
-        fs.readFile(newPath, (err, data) => {
-          const fileData = data.toString()
+        fs.readFile(newPath, (_, data) => {
+          const fileData: string = data.toString()
           readFileCallback(fileName, newPath, fileData)
         })
       }

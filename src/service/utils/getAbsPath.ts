@@ -1,2 +1,2 @@
 import * as path from 'path'
-export default p => path.resolve(p)
+export default (p: string) => path.resolve(p)

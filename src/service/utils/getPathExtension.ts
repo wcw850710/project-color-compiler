@@ -1,5 +1,4 @@
-export default (path): string => {
+export default (path: string): string => {
   const filePathSp: string[] = path.split('.')
-  const extension: string = filePathSp[filePathSp.length - 1]
-  return extension
+  return filePathSp[filePathSp.length - 1]
 }
