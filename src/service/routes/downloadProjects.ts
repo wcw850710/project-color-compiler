@@ -3,12 +3,16 @@ import * as path from 'path'
 import createHash from '../utils/createHash'
 import {iExpressRoute} from "../interfaces/route";
 
+const nodeEnviroment: string = process.env.NODE_ENV as string
+const isProduction: boolean = nodeEnviroment === 'production'
+const prePath: string = isProduction ? `` : `export-projects-cache/`
+const filePath: (hashFileName: string) => string = hashFileName => path.relative('./', `${prePath}${hashFileName}`)
+
 export const before: iExpressRoute = (req, res) => {
   const { data }: { data: string } = req.body
   const hashFileName: string = `export-${createHash()}.json`
-  const filePath: string = path.relative('./', `export-projects-cache/${hashFileName}`)
   try{
-    fs.writeFileSync(filePath, data)
+    fs.writeFileSync(filePath(hashFileName), data)
     res.status(200).send({
       message: '取得下載連結成功',
       data: hashFileName
@@ -22,12 +26,12 @@ export const before: iExpressRoute = (req, res) => {
   }
 }
 export const download: iExpressRoute = (req, res) => {
-  const filePath = path.relative('./', `export-projects-cache/${req.query.fileName}`)
-  res.download(filePath, `專案顏色數據.json`, err => {
+  const hashFileName: string = req.query.fileName as string
+  res.download(filePath(hashFileName), `專案顏色數據.json`, err => {
     if(err) {
       console.log(err)
     }else {
-      fs.unlinkSync(filePath)
+      fs.unlinkSync(filePath(hashFileName))
     }
   })
 }
