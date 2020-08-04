@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = '/api'
+const baseUrl = process.env.NODE_ENV === 'production' ? '' : '/api'
 const https = Vue => {
   const apis = {
     compiler: (params) => axios.post(`${baseUrl}/compiler`, params),

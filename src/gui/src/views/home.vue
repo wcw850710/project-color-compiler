@@ -420,7 +420,7 @@
           const fileName = (await this.$http.beforeDownload({
             data: JSON.stringify(this.$store.state.projects)
           })).data.data
-          window.open(`/api/download?fileName=${fileName}`)
+          window.open(`${process.env.NODE_ENV === 'production' ? '' : '/api'}/download?fileName=${fileName}`)
         }catch (err) {
           this.$notify.error({
             title: '匯出數據失敗',
