@@ -5,7 +5,7 @@ import {iExpressRoute} from "../interfaces/route";
 
 const nodeEnviroment: string = process.env.NODE_ENV as string
 const isProduction: boolean = nodeEnviroment === 'production'
-const prePath: string = isProduction ? `../dist/service/` : `export-projects-cache/`
+const prePath: string = isProduction ? `./service/` : `export-projects-cache/`
 const filePath: (hashFileName: string) => string = hashFileName => path.relative('./', `${prePath}${hashFileName}`)
 
 export const before: iExpressRoute = (req, res) => {

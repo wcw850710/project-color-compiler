@@ -1,1 +1,0 @@
-node ../dist/service/index.js
