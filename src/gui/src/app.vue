@@ -2,7 +2,7 @@
   <div id="app" :style="{backgroundColor: isNight ? '#303133' : '#fff'}">
 <!--    <header :style="{justifyContent: routeName === 'home' ? 'center' : 'flex-start'}">-->
     <header>
-      <h1 :style="{color: isNight ? '#fff' : '#000'}">專案顏色管理工具</h1>
+      <h1 :style="{color: isNight ? '#fff' : '#000'}">專案顏色管理工具<span class="beta">BETA</span></h1>
       <i class="theme night el-icon-moon" @click="onChanceTheme" v-if="isNight"></i>
       <i class="theme el-icon-sunny" @click="onChanceTheme" v-else></i>
       <div class="tip" :style="{color: isNight ? '#fff' : '#000'}">
@@ -92,6 +92,11 @@
       div {
         font-size: 13px;
       }
+    }
+    .beta{
+      font-size: 12px;
+      font-weight: 900;
+      margin-left: 10px;
     }
   }
   footer {

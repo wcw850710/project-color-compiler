@@ -5,13 +5,11 @@ import router from './routes'
 const app = express();
 const upload = multer()
 
-app.use('/', express.static(path.resolve('./gui')))
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+app.use(upload.single('file')); // for parsing multipart/form-data
 
-// for parsing multipart/form-data
-app.use(upload.single('file'));
-
+app.use('/', express.static(path.resolve('./gui')))
 app.use('/', router)
 
 app.listen(4200, function () {

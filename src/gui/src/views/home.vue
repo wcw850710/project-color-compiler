@@ -23,7 +23,7 @@
           <el-button slot="reference" type="danger" icon="el-icon-delete" circle></el-button>
         </el-popconfirm>
         <el-button style="margin-left: 4px;" :class="{'night-default-btn': isNight}" type="default" icon="el-icon-setting" circle @click="onOpenEditorProjectDialog(true, pro, index)"></el-button>
-        <div class="name">{{index + 1}}. {{pro.name}}</div>
+        <div class="name">{{pro.name}}</div>
         <div class="btns">
           <el-button type="default" @click="onOpenTranslateDialog(index)" :class="{'night-default-btn--disabled': isNight}" disabled>移除導入</el-button>
           <el-button type="default" @click="onOpenTranslateDialog(index)" :class="{'night-default-btn--disabled': isNight}" disabled>顏色過濾</el-button>
@@ -464,7 +464,7 @@
                 message: '聰明的選擇'
               })
             }else {
-              this.$store.commit('ADD_PROJECT', this.project)
+              this.$store.commit('ADD_PROJECT', JSON.parse(JSON.stringify(this.project)))
               this.$notify.success({
                 title: '新增專案成功',
                 message: '理智的選擇'
