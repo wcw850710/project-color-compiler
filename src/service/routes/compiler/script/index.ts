@@ -84,14 +84,14 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
           result = result.replace(originContent, compileContent)
         })
         if (isAutoImport && !checkIsImportRegex.test(result)) {
-          const getAllImportedRegex: RegExp = /import\s*(\*\s*as\s*[A-z0-9_$]*|\{[A-z0-9_$,\s]*\}|[$_A-z0-9]*(,\s*\{[A-z0-9_$,\s]*\})*)\s*from\s*['"'][.\/@$_\-A-z0-9]*['"`];?$/gm
+          const getAllImportedRegex: RegExp = /import\s*(\*\s*as\s*[A-z0-9_$]*|\{[A-z0-9_$,\s]*\}|[$_A-z0-9]*(,\s*\{[A-z0-9_$,\s]*\})*)\s*from\s*['"'][.\/@$_\-A-z0-9]*['"`];?/gm
           const matchImported: RegExpMatchArray | null = originData.match(getAllImportedRegex)
-          const importColorsDiclared: string = `import { ${compileFileName} } from '${getToColorFilePath(filePath, config)}';\n`
+          const importColorsDiclared: string = `import { ${compileFileName} } from '${getToColorFilePath(filePath, config)}';`
           if (matchImported === null) {
-            result = `${importColorsDiclared}${result}`
+            result = `${importColorsDiclared}\n${result}`
           } else {
             const lastImported: string = matchImported[matchImported.length - 1]
-            result = result.replace(lastImported, `${lastImported}\n${importColorsDiclared}\n`)
+            result = result.replace(lastImported, `${lastImported}\n${importColorsDiclared}`)
           }
         }
         fs.writeFile(filePath, result, () => {
