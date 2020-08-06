@@ -95,10 +95,11 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
     const isTs: boolean = compileFileType === 'ts'
     const fileName: string = compileFileName
     const cacheColorsKeys: string[] = Object.keys(cacheColors)
-    let result = `export ${fileName} = {`
+    let result = `export const ${fileName}`
     if(isTs) {
-      result = `interface iColor { [variable: string]: string }\n\n${result}`
+      result = `interface iColor { [variable: string]: string }\n\n${result}: iColor`
     }
+    result += ` = {`
     if(cacheColorsKeys.length > 0) {
       result += '\n'
       cacheColorsKeys.forEach(color => {
@@ -196,10 +197,11 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
         compileData: result
       })
     }
-    ++compileCurrent === cacheFileLength && (() => {
+    ++compileCurrent === cacheFileLength && (async () => {
       //TODO Promise.all
       // TODO 遍歷檔案寫入變量
-      createColorDeclareFile()
+      const res: iResolve = await createColorDeclareFile()
+      resolve(res)
     })()
   }
 

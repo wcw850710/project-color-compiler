@@ -1,4 +1,4 @@
-export default (randomCodesHashLength: number = 10): string => {
+export default (randomCodesHashLength: number = 20): string => {
   const allEnglishBytes: string = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
   const allNumberBytes: string = '0123456789'
   const allBytes: string = allEnglishBytes + allNumberBytes
