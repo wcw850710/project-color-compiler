@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import {iComputedConfig} from "../../../interfaces/config";
 import {iResolve} from "../interfaces/resolve";
+import getToColorFilePath from '../../../utils/getToColorFilePath'
 import recursiveDir from "../../../utils/recursiveDir";
 import getRgbaColor from "../../../utils/getRgbaColor"
 import getHashColor from "../../../utils/getHashColor"
@@ -30,7 +31,7 @@ interface iReplaceColors {
 
 
 export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new Promise((resolve, reject) => {
-  const {compileFileType, compileFileName, compileFilePath}: iComputedConfig = config
+  const {compileFileType, compileFileName, compileFilePath, isAutoImport}: iComputedConfig = config
   const cacheColors: iColorVariable = {} // {["'" + color + "'"]: variable}
   const cacheFiles: iCacheFiles[] = []
   let cacheFileLength: number = 0
@@ -117,12 +118,16 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
   const loopFilesToChangeVariable = () => new Promise<boolean>((resolve) => {
     const cacheFilesLen = cacheFiles.length
     if (cacheFilesLen > 0) {
+      const checkIsImportRegex = new RegExp(`import\\s*{\\s*${compileFileName}\\s*}\\s*from\\s['"'][.\\/@$_\\-A-z0-9]*['"\`];?$`, 'm')
       let compiledLen: number = 0
       cacheFiles.forEach(({filePath, originData, compileData}) => {
         let result: string = originData
         compileData.forEach(({ compileContent, originContent }) => {
           result = result.replace(originContent, compileContent)
         })
+        if (isAutoImport && !checkIsImportRegex.test(result)) {
+          result = `import { ${compileFileName} } from '${getToColorFilePath(filePath, config)}';\n` + result
+        }
         fs.writeFile(filePath, result, () => {
           ++compiledLen === cacheFilesLen && resolve(true)
         })
@@ -214,7 +219,6 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
       })
     }
     ++compileCurrent === cacheFileLength && (async () => {
-      //TODO Promise.all
       try {
         await Promise.all([loopFilesToChangeVariable(), createColorDeclareFile()])
         resolve({
