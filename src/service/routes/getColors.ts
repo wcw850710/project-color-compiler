@@ -1,7 +1,7 @@
-import getFileColors from '../utils/getFileColors'
+import getFileColors from '../utils/style/getFileColors'
 import getConfig from '../utils/getConfig'
 import { iComputedConfig } from "../interfaces/config";
-import { iFileResult, iColorJSONContent } from "../utils/getFileColors";
+import { iFileResult, iColorJSONContent } from "../utils/style/getFileColors";
 import {iExpressRoute} from "../interfaces/route";
 
 const getColors: iExpressRoute = async (req, res) => {

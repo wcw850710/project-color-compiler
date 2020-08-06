@@ -1,6 +1,6 @@
-import getToColorFilePath from './getToColorFilePath'
+import getToColorFilePath from '../getToColorFilePath'
 import { matchVueStartStyleTag } from './getVueStyle'
-import { iComputedConfig } from '../interfaces/config'
+import { iComputedConfig } from '../../interfaces/config'
 
 export default (extension: string, filePath: string, fileData: string, config: iComputedConfig): string => {
   const {isAutoImport, compileFileName, compileFileType}: iComputedConfig = config

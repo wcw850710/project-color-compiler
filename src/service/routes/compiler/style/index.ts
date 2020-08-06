@@ -3,10 +3,10 @@ import getRgbaColor from "../../../utils/getRgbaColor"
 import getHashColor from "../../../utils/getHashColor"
 import recursiveDir from "../../../utils/recursiveDir"
 import createHash from '../../../utils/createHash'
-import getFileColors, {iFileResult, iColorJSONContent} from '../../../utils/getFileColors'
-import autoImport from '../../../utils/autoImport'
+import getFileColors, {iFileResult, iColorJSONContent} from '../../../utils/style/getFileColors'
+import autoImport from '../../../utils/style/autoImport'
 import getPathExtension from '../../../utils/getPathExtension'
-import {compile as vueCompile, iVueData} from '../../../utils/getVueStyle'
+import {compile as vueCompile, iVueData} from '../../../utils/style/getVueStyle'
 import {iComputedConfig} from '../../../interfaces/config'
 import {iGetColor} from "../../../interfaces/color";
 import {iResolve} from "../interfaces/resolve";
