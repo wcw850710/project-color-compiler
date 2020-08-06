@@ -19,6 +19,7 @@ interface iCompileData {
 
 interface iCacheFiles {
   filePath: string
+  originData: string
   compileData: iCompileData[]
 }
 
@@ -28,7 +29,7 @@ interface iReplaceColors {
 }
 
 
-export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new Promise((resolve, _) => {
+export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new Promise((resolve, reject) => {
   const {compileFileType, compileFileName, compileFilePath}: iComputedConfig = config
   const cacheColors: iColorVariable = {} // {["'" + color + "'"]: variable}
   const cacheFiles: iCacheFiles[] = []
@@ -91,7 +92,7 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
 //   }
 
   // 建立顏色申明文件
-  const createColorDeclareFile = () => new Promise<iResolve>(resolve => {
+  const createColorDeclareFile = () => new Promise<boolean>(resolve => {
     const isTs: boolean = compileFileType === 'ts'
     const fileName: string = compileFileName
     const cacheColorsKeys: string[] = Object.keys(cacheColors)
@@ -109,10 +110,24 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
     }
     result += '}'
     fs.writeFileSync(compileFilePath, result)
-    resolve({
-      status: 200,
-      message: '編譯完成'
-    })
+    resolve(true)
+  })
+
+  // 遍歷檔案寫入變量
+  const loopFilesToChangeVariable = () => new Promise<boolean>((resolve) => {
+    const cacheFilesLen = cacheFiles.length
+    if (cacheFilesLen > 0) {
+      let compiledLen: number = 0
+      cacheFiles.forEach(({filePath, originData, compileData}) => {
+        let result: string = originData
+        compileData.forEach(({ compileContent, originContent }) => {
+          result = result.replace(originContent, compileContent)
+        })
+        fs.writeFile(filePath, result, () => {
+          ++compiledLen === cacheFilesLen && resolve(true)
+        })
+      })
+    }
   })
 
   // 編譯 js file 並儲存 cache
@@ -128,14 +143,14 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
         if (firstStr === '=') {
           contentFrom = 'equal-str'
           const formatColor: string = matchResult.substr(1, matchResult.length).trim().replace(/[\s'"`]/g, '')
-          recordCacheJSColors(formatColor, (variable: string) => compileContent = `={${variable}}`)
+          recordCacheJSColors(formatColor, (variable: string) => compileContent = `={${compileFileName}.${variable}}`)
         } else {
           contentFrom = 'brackets'
           const isSimpleColor: boolean = /^{\s*['"`]\s*(#[A-z0-9]*|rgba\s*\([0-9\s,.]*\)\s*)\s*['"`]\s*}$/.test(matchResult) === true
           // 如果格式是 {'#000'} 這類的
           if (isSimpleColor) {
             const formatColor: string = matchResult.split(/[\{\}]/g).join('').trim().replace(/[\s'"`]/g, '')
-            recordCacheJSColors(formatColor, (variable: string) => compileContent = `{${variable}}`)
+            recordCacheJSColors(formatColor, (variable: string) => compileContent = `{${compileFileName}.${variable}}`)
           } else {
             // 如果是判斷式或者是 style {} 的
             const matchResultLen: number = matchResult.length
@@ -178,7 +193,7 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
             if (replaceColors.length > 0) {
               replaceColors.forEach(({originColor, variable}) => {
                 const content: string = compileContent !== '' ? compileContent : matchResult
-                compileContent = content.replace(originColor, variable)
+                compileContent = content.replace(originColor, `${compileFileName}.${variable}`)
               })
             } else {
               // 過濾掉無顏色的，如 {true} 這類的數據
@@ -194,14 +209,21 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
       })
       cacheFiles.push({
         filePath,
+        originData: input,
         compileData: result
       })
     }
     ++compileCurrent === cacheFileLength && (async () => {
       //TODO Promise.all
-      // TODO 遍歷檔案寫入變量
-      const res: iResolve = await createColorDeclareFile()
-      resolve(res)
+      try {
+        await Promise.all([loopFilesToChangeVariable(), createColorDeclareFile()])
+        resolve({
+          status: 200,
+          message: '交叉編譯成功！',
+        })
+      }catch (e) {
+        reject(false)
+      }
     })()
   }
 
