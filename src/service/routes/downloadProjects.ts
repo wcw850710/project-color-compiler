@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import createHash from '../utils/createHash'
 import {iExpressRoute} from "../interfaces/route";
+import {sendResponse} from "../utils/sendResponse";
 
 const nodeEnviroment: string = process.env.NODE_ENV as string
 const isProduction: boolean = nodeEnviroment === 'production'
@@ -13,13 +14,15 @@ export const before: iExpressRoute = (req, res) => {
   const hashFileName: string = `export-${createHash()}.json`
   try{
     fs.writeFileSync(filePath(hashFileName), data)
-    res.status(200).send({
+    sendResponse(res, {
+      status: 200,
       message: '取得下載連結成功',
       data: hashFileName
     })
   }catch(err) {
     console.log(err)
-    res.status(400).send({
+    sendResponse(res, {
+      status: 400,
       message: '取得下載連結失敗',
       data: null
     })

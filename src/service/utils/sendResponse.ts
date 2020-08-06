@@ -5,7 +5,7 @@ interface iReturnResponse extends iResolve {
   data: any
 }
 
-export const setResponse = (
+export const sendResponse = (
   res: express.Response,
   {status, message, data}: iReturnResponse
 ) => res.status(status).send({

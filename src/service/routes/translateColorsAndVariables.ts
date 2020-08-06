@@ -4,6 +4,7 @@ import recursiveDir from '../utils/recursiveDir'
 import getConfig from '../utils/getConfig'
 import createHash from '../utils/createHash'
 import {iComputedConfig, iOriginConfig} from "../interfaces/config";
+import {sendResponse} from "../utils/sendResponse";
 // const getColorJSON = require('../utils/getColorJSON')
 
 interface iBody {
@@ -41,7 +42,8 @@ const translateColorsAndVariables: iExpressRoute = async (req, res) => {
       }
     })
     fs.writeFile(path, data, (_) => {
-      ++doneFileLength === cacheFileLength && res.status(200).send({
+      ++doneFileLength === cacheFileLength && sendResponse(res, {
+        status: 200,
         message: '覆蓋顏色成功',
         data: null
       })

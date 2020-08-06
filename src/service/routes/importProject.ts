@@ -1,4 +1,5 @@
 import {iExpressRoute} from "../interfaces/route";
+import {sendResponse} from "../utils/sendResponse";
 interface iProject {
   name: string
   config: {
@@ -12,7 +13,8 @@ interface iProject {
 const importProject: iExpressRoute = (req, res) => {
   const { buffer } = req.file
   const data: iProject[] = JSON.parse(buffer.toString())
-  res.status(200).send({
+  sendResponse(res, {
+    status: 200,
     message: '哈囉',
     data
   })

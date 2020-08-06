@@ -1,6 +1,7 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import {iExpressRoute} from "../interfaces/route";
+import {sendResponse} from "../utils/sendResponse";
 
 interface iFolders {
   name: string
@@ -40,12 +41,14 @@ const getFilePath: iExpressRoute = async (req, res) => {
     }
   })
   try {
-    res.status(200).send({
+    sendResponse(res, {
+      status: 200,
       message: '路徑獲取成功',
       data: paths
     })
   }catch (err) {
-    res.status(400).send({
+    sendResponse(res, {
+      status: 400,
       message: '找不到路徑',
       data: []
     })
