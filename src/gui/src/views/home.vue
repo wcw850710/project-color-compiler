@@ -87,7 +87,7 @@
           <el-radio v-model="proj.config.isAutoImport" :label="true">是</el-radio>
           <el-radio v-model="proj.config.isAutoImport" :label="false">否</el-radio>
         </el-form-item>
-        <el-form-item label="格式訂製">
+        <el-form-item label="檔案過濾">
           <span style="color: #C0C4CC; user-select: none;">計畫中</span>
         </el-form-item>
       </el-form>
