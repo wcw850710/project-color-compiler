@@ -49,49 +49,6 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
     }
   }
 
-  // 取得定義好的顏色
-//   const getDeclaredColors = () => {
-//     const colorFileData = `interface iColor { [variable: string]: string }
-//
-// export _colors = {
-//   eJVUQJ1BI3: 'rgba(0,0,0,.5)',
-//   vI62ughMdi: '#fff',
-//   jKFX8UllXE: '#000',
-//   commit1: '#1c1c1c', // 1111
-//   commit2: '#1a1a1a', //2222222
-//   commit3: '#1B1B1B',// 3
-//   commit4: '#999',//444444
-// }`
-//     const colorFileDataLen = colorFileData.length
-//     const exportIndex = colorFileData.search('export')
-//     let colorResult = []
-//     if(exportIndex === -1) return
-//     else {
-//       const afterExportFileData = colorFileData.substr(exportIndex, colorFileDataLen)
-//       const afterExportFileDataLen = afterExportFileData.length
-//       let index = 0
-//       let openBraceIndex = 0
-//       let closeBraceIndex = 0
-//       while (index < afterExportFileDataLen) {
-//         const txt = afterExportFileData[index]
-//         if (txt === '{') openBraceIndex = index
-//         if (txt === '}') closeBraceIndex = index
-//         index++
-//       }
-//       const braceUglyFileData = afterExportFileData.substr(openBraceIndex, closeBraceIndex)
-//       const matchColors = braceUglyFileData.match(/[A-z0-9$_]*:\s*['"`](rgba\s*\([0-9,.\s]*\)|#[A-z0-9]*)['"`](\s*,\s*[\/]{2}.*)?/gm)
-//       console.log(braceUglyFileData)
-//       matchColors.forEach(matchColor => {
-//         const [variable, commitColor] = matchColor.split(/:\s*/)
-//         const [color, commit] = commitColor.split(/,\s*[\/]{2}\s*/)
-//         colorResult.push({
-//           color, variable, commit: commit || ''
-//         })
-//       })
-//     }
-//     return colorResult
-//   }
-
   // 建立顏色申明文件
   const createColorDeclareFile = () => new Promise<boolean>(resolve => {
     const isTs: boolean = compileFileType === 'ts'
@@ -118,7 +75,8 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
   const loopFilesToChangeVariable = () => new Promise<boolean>((resolve) => {
     const cacheFilesLen = cacheFiles.length
     if (cacheFilesLen > 0) {
-      const checkIsImportRegex = new RegExp(`import\\s*{\\s*${compileFileName}\\s*}\\s*from\\s['"'][.\\/@$_\\-A-z0-9]*['"\`];?$`, 'm')
+      const checkIsImportRegex: RegExp = new RegExp(`import\\s*{\\s*${compileFileName}\\s*}\\s*from\\s['"'][.\\/@$_\\-A-z0-9]*['"\`];?$`, 'm')
+
       let compiledLen: number = 0
       cacheFiles.forEach(({filePath, originData, compileData}) => {
         let result: string = originData
@@ -126,7 +84,15 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
           result = result.replace(originContent, compileContent)
         })
         if (isAutoImport && !checkIsImportRegex.test(result)) {
-          result = `import { ${compileFileName} } from '${getToColorFilePath(filePath, config)}';\n` + result
+          const getAllImportedRegex: RegExp = /import\s*(\*\s*as\s*[A-z0-9_$]*|\{[A-z0-9_$,\s]*\}|[$_A-z0-9]*(,\s*\{[A-z0-9_$,\s]*\})*)\s*from\s*['"'][.\/@$_\-A-z0-9]*['"`];?$/gm
+          const matchImported: RegExpMatchArray | null = originData.match(getAllImportedRegex)
+          const importColorsDiclared: string = `import { ${compileFileName} } from '${getToColorFilePath(filePath, config)}';\n`
+          if (matchImported === null) {
+            result = `${importColorsDiclared}${result}`
+          } else {
+            const lastImported: string = matchImported[matchImported.length - 1]
+            result = result.replace(lastImported, `${lastImported}\n${importColorsDiclared}\n`)
+          }
         }
         fs.writeFile(filePath, result, () => {
           ++compiledLen === cacheFilesLen && resolve(true)
