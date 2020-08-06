@@ -2,11 +2,13 @@ import { styleCompile } from './style'
 import { scriptCompile } from "./script"
 import {iOriginConfig} from '../../interfaces/config'
 import {iExpressRoute} from "../../interfaces/route"
+import getConfig from "../../utils/getConfig";
 
 export const compiler: iExpressRoute = async (req, res) => {
-  const { config } = req.body as { config: iOriginConfig }
-  const [, compileFileExtension] = config.compileFile
-  const isScriptFile: boolean = /[jt]s/.test(compileFileExtension)
+  const { config: originConfig } = req.body as { config: iOriginConfig }
+  const config = getConfig(originConfig)
+  const { compileFileType } = config
+  const isScriptFile: boolean = /[jt]s/.test(compileFileType)
   let status: number = 500
   let message: string = ''
   try {

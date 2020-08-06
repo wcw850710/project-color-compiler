@@ -1,5 +1,4 @@
 import * as fs from 'fs'
-import getConfig from '../../../utils/getConfig'
 import getRgbaColor from "../../../utils/getRgbaColor"
 import getHashColor from "../../../utils/getHashColor"
 import recursiveDir from "../../../utils/recursiveDir"
@@ -8,7 +7,7 @@ import getFileColors, {iFileResult, iColorJSONContent} from '../../../utils/getF
 import autoImport from '../../../utils/autoImport'
 import getPathExtension from '../../../utils/getPathExtension'
 import {compile as vueCompile, iVueData} from '../../../utils/getVueStyle'
-import {iOriginConfig, iComputedConfig} from '../../../interfaces/config'
+import {iComputedConfig} from '../../../interfaces/config'
 import {iGetColor} from "../../../interfaces/color";
 import {iResolve} from "../interfaces/resolve";
 
@@ -17,9 +16,8 @@ interface iResultColorVariables {
 }
 type iColors = string | string[]
 
-export const styleCompile =  (_config: iOriginConfig): Promise<iResolve> => new Promise((resolve, reject) => {
-  const config: iComputedConfig = getConfig(_config)
-  const {fileExtensions, compileFilePath, compileFileType}: iComputedConfig = config
+export const styleCompile =  (config: iComputedConfig): Promise<iResolve> => new Promise((resolve, reject) => {
+  const {compileFilePath, compileFileType}: iComputedConfig = config
   const result: { [color: string]: boolean } = {}
   let cacheFile: string[] = []
   let cacheFileColors: iColors[][] = []
@@ -32,47 +30,38 @@ export const styleCompile =  (_config: iOriginConfig): Promise<iResolve> => new 
     const colorsFileData: iFileResult = await getFileColors(compileFilePath)
     let colorsFileResult: string = ''
     if (Object.keys(result).length) {
-      const isSass: boolean = fileExtensions['.sass'] === true
-      const isScss: boolean = fileExtensions['.scss'] === true
-      const isVue: boolean = fileExtensions['.vue'] === true
-      const isJS: boolean = fileExtensions['.js'] === true
-      if (isSass || isScss || isVue) {
-        for (const color in colorsFileData) {
-          const colorData: iColorJSONContent | {} = colorsFileData[color]
-          if (colorData.hasOwnProperty('variable')) {
-            const {variable, commit} = colorData as iColorJSONContent
-            const period: string = (compileFileType === 'scss' ? `;` : '') + `${commit ? ` // ${commit}` : ''}\n`
-            colorsFileResult += `$${variable}: ${color}${period}`
-            resultColorVariables[color] = `$${variable}`
-            if (result[color]) {
-              delete colorsFileData[color]
-              delete result[color]
-            } else {
-              delete colorsFileData[color]
-            }
-          }
-        }
-        for (const color in result) {
-          const period: string = (compileFileType === 'scss' ? ';' : '') + '\n'
-          const noSpaceColor: string = color.replace(/\s/g, '')
-          if (colorsFileData[noSpaceColor]) {
-            const {variable} = colorsFileData[noSpaceColor] as iColorJSONContent
-            colorsFileResult += `$${variable}: ${noSpaceColor}${period}`
-            resultColorVariables[noSpaceColor] = `$${variable}`
-            delete colorsFileData[noSpaceColor]
-            delete result[color]
-          } else if (!resultColorVariables[noSpaceColor]) {
-            const variable: string = createHash()
-            colorsFileResult += `$${variable}: ${noSpaceColor}${period}`
-            resultColorVariables[noSpaceColor] = `$${variable}`
+      for (const color in colorsFileData) {
+        const colorData: iColorJSONContent | {} = colorsFileData[color]
+        if (colorData.hasOwnProperty('variable')) {
+          const {variable, commit} = colorData as iColorJSONContent
+          const period: string = (compileFileType === 'scss' ? `;` : '') + `${commit ? ` // ${commit}` : ''}\n`
+          colorsFileResult += `$${variable}: ${color}${period}`
+          resultColorVariables[color] = `$${variable}`
+          if (result[color]) {
+            delete colorsFileData[color]
             delete result[color]
           } else {
-            delete result[color]
+            delete colorsFileData[color]
           }
         }
-      } else if(isJS) {
-        console.log('hello js!')
-        return resolve({status: 200, message: '顏色更新成功'})
+      }
+      for (const color in result) {
+        const period: string = (compileFileType === 'scss' ? ';' : '') + '\n'
+        const noSpaceColor: string = color.replace(/\s/g, '')
+        if (colorsFileData[noSpaceColor]) {
+          const {variable} = colorsFileData[noSpaceColor] as iColorJSONContent
+          colorsFileResult += `$${variable}: ${noSpaceColor}${period}`
+          resultColorVariables[noSpaceColor] = `$${variable}`
+          delete colorsFileData[noSpaceColor]
+          delete result[color]
+        } else if (!resultColorVariables[noSpaceColor]) {
+          const variable: string = createHash()
+          colorsFileResult += `$${variable}: ${noSpaceColor}${period}`
+          resultColorVariables[noSpaceColor] = `$${variable}`
+          delete result[color]
+        } else {
+          delete result[color]
+        }
       }
       fs.writeFileSync(compileFilePath, colorsFileResult)
       transformAllFilesColorToVariable(resultColorVariables)

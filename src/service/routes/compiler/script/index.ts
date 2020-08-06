@@ -1,14 +1,12 @@
-import {iComputedConfig, iOriginConfig} from "../../../interfaces/config";
+import {iComputedConfig} from "../../../interfaces/config";
 import {iResolve} from "../interfaces/resolve";
 import recursiveDir from "../../../utils/recursiveDir";
-import getConfig from "../../../utils/getConfig";
 
 const compile = (input: string, path: string) => {
   console.log(input, path)
 }
 
-export const scriptCompile = (_config: iOriginConfig): Promise<iResolve> => new Promise((resolve, _) => {
-  const config: iComputedConfig = getConfig(_config)
+export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new Promise((resolve, _) => {
   // const {fileExtensions, compileFilePath, compileFileType}: iComputedConfig = config
   // let cacheFile: string[] = []
   // let cacheFileColors: iColors[][] = []
