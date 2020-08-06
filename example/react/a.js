@@ -1,3 +1,5 @@
+import React from 'react'
+
 export const A = () => (
   <a href={'#'}
   style={{color: '999',
