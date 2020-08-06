@@ -10,7 +10,7 @@ interface iFolders {
 
 const getFilePath: iExpressRoute = async (req, res) => {
   const { path: filePath } = req.query as { path: string }
-  const paths = await new Promise<iFolders[]>(async (reslove) => {
+  const paths = await new Promise<iFolders[]>(async (resolve) => {
     const absPath = path.resolve(filePath)
     try {
       const paths: string[] = await fs.readdirSync(absPath)
@@ -21,7 +21,7 @@ const getFilePath: iExpressRoute = async (req, res) => {
         fs.stat(filedir, function (error, stats) {
           if (error) {
             if (index === paths.length - 1)
-              reslove(folders)
+              resolve(folders)
           } else {
             const isFile: boolean = stats.isFile();
             const isDir: boolean = stats.isDirectory();
@@ -31,12 +31,12 @@ const getFilePath: iExpressRoute = async (req, res) => {
               folders.push({name: filename, extensions: '', isDirectory: true})
             }
             if (index === paths.length - 1)
-              reslove(folders)
+              resolve(folders)
           }
         })
       });
     } catch(err) {
-      reslove([])
+      resolve([])
     }
   })
   try {

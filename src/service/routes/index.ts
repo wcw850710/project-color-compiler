@@ -1,6 +1,6 @@
 import * as express from 'express'
 const router = express.Router()
-import compiler from './compiler'
+import { compiler } from './compiler'
 // import * as fs from 'fs'
 // import * as createHash from '../utils/createHash'
 import renderGui from './renderGui'

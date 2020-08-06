@@ -18,12 +18,12 @@ export interface iFileResult {
 }
 
 // 讀取 colors file 變倒出 fileData: string
-const readColorsFileData: iReadColorsFileData = (compileFilePath) => new Promise<iColorJSON>(reslove => {
+const readColorsFileData: iReadColorsFileData = (compileFilePath) => new Promise<iColorJSON>(resolve => {
   try {
     const data: Buffer = fs.readFileSync(compileFilePath)
-    reslove(compilerColorsFileData(data.toString()))
+    resolve(compilerColorsFileData(data.toString()))
   } catch (err) {
-    reslove({})
+    resolve({})
   }
 })
 
