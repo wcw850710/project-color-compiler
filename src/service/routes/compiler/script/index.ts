@@ -76,7 +76,7 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
   const loopFilesToChangeVariable = () => new Promise<boolean>((resolve) => {
     const cacheFilesLen = cacheFiles.length
     if (cacheFilesLen > 0) {
-      const checkIsImportRegex: RegExp = new RegExp(`import\\s*{\\s*${compileFileName}\\s*}\\s*from\\s['"'][.\\/@$_\\-A-z0-9]*['"\`];?$`, 'm')
+      const checkIsImportRegex: RegExp = new RegExp(`import\\s*{\\s*${compileFileName}\\s*}\\s*from\\s['"\`][.\\/@$_\\-A-z0-9]*['"\`];?$`, 'm')
 
       let compiledLen: number = 0
       cacheFiles.forEach(({filePath, originData, compileData}) => {
@@ -85,14 +85,14 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
           result = result.replace(originContent, compileContent)
         })
         if (isAutoImport && !checkIsImportRegex.test(result)) {
-          const getAllImportedRegex: RegExp = /import\s*(\*\s*as\s*[A-z0-9_$]*|\{[A-z0-9_$,\s]*\}|[$_A-z0-9]*(,\s*\{[A-z0-9_$,\s]*\})*)\s*from\s*['"'][.\/@$_\-A-z0-9]*['"`];?/gm
+          const getAllImportedRegex: RegExp = /import\s*(\*\s*as\s*[A-z0-9_$]*|{[A-z0-9_$,\s]*}|[$_A-z0-9]*(,\s*{[A-z0-9_$,\s]*})*)\s*from\s*['"`][.\/@$_\-A-z0-9]*['"`];?/gm
           const matchImported: RegExpMatchArray | null = originData.match(getAllImportedRegex)
-          const importColorsDiclared: string = `import { ${compileFileName} } from '${getToColorFilePath(filePath, config)}';`
+          const importColorsDeclared: string = `import { ${compileFileName} } from '${getToColorFilePath(filePath, config)}';`
           if (matchImported === null) {
-            result = `${importColorsDiclared}\n${result}`
+            result = `${importColorsDeclared}\n${result}`
           } else {
             const lastImported: string = matchImported[matchImported.length - 1]
-            result = result.replace(lastImported, `${lastImported}\n${importColorsDiclared}`)
+            result = result.replace(lastImported, `${lastImported}\n${importColorsDeclared}`)
           }
         }
         fs.writeFile(filePath, result, () => {
@@ -104,7 +104,7 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
 
   // 編譯 js file 並儲存 cache
   const compile = (input: string, filePath: string) => {
-    const getColorRegex: RegExp = /{[\n\sA-z0-9$#'"`?:_\-,&|().{}]*\}|=\s*['"`](#[A-z0-9]*|rgba\(\s*[0-9,.\s]*\s*\))['"`]/gm
+    const getColorRegex: RegExp = /{[\n\sA-z0-9$#'"`?:_\-,&|().{}]*}|=\s*['"`](#[A-z0-9]*|rgba\(\s*[0-9,.\s]*\s*\))['"`]/gm
     const bracketAndStringColors: RegExpMatchArray | null = input.match(getColorRegex)
     if (bracketAndStringColors !== null) {
       const result: iCompileData[] = []
@@ -118,10 +118,10 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
           recordCacheJSColors(formatColor, (variable: string) => compileContent = `={${compileFileName}.${variable}}`)
         } else {
           contentFrom = 'brackets'
-          const isSimpleColor: boolean = /^{\s*['"`]\s*(#[A-z0-9]*|rgba\s*\([0-9\s,.]*\)\s*)\s*['"`]\s*}$/.test(matchResult) === true
+          const isSimpleColor: boolean = /^{\s*['"`]\s*(#[A-z0-9]+|rgba\s*\([0-9\s,.]*\)\s*)\s*['"`]\s*}$/.test(matchResult)
           // 如果格式是 {'#000'} 這類的
           if (isSimpleColor) {
-            const formatColor: string = matchResult.split(/[\{\}]/g).join('').trim().replace(/[\s'"`]/g, '')
+            const formatColor: string = matchResult.split(/[{}]/g).join('').trim().replace(/[\s'"`]/g, '')
             recordCacheJSColors(formatColor, (variable: string) => compileContent = `{${compileFileName}.${variable}}`)
           } else {
             // 如果是判斷式或者是 style {} 的
@@ -130,34 +130,30 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
             let index: number = 0
             while (index++ < matchResultLen) {
               const strTag: string = matchResult[index]
-              if (/['"`]/.test(strTag) === true) {
+              if (/['"`]/.test(strTag)) {
                 index++
                 if (matchResult[index] === '#') {
                   const [formatColor, isHashColor]: iGetColor = getHashColor(matchResult, index, _index => (index = _index))
                   const originColor: string = `${strTag}${formatColor}${strTag}`
-                  if (isHashColor === false) continue
-                  else {
+                  if (isHashColor) {
                     recordCacheJSColors(formatColor, (variable: string) => replaceColors.push(
                       {
                         originColor,
                         variable
                       }
                     ))
-                    continue
                   }
                 } else if (matchResult[index] === 'r') {
                   const [color, isRgbaColor]: iGetColor = getRgbaColor(matchResult, index, _index => (index = _index))
                   const originColor: string = `${strTag}${color}${strTag}`
                   const formatColor: string = color.replace(/[\s'"`]/g, '').trim()
-                  if (isRgbaColor === false) continue
-                  else {
+                  if (isRgbaColor) {
                     recordCacheJSColors(formatColor, (variable: string) => replaceColors.push(
                       {
                         originColor,
                         variable
                       }
                     ))
-                    continue
                   }
                 }
               }
@@ -199,17 +195,18 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
   }
 
   // 遍歷前先提取顏色定義並注入到 cacheColors 裡
-  const beforeCompile = async (callback: () => void) => {
+  const beforeCompile = async () => {
     const colorList: iColorList = await getDeclaredColors(config)
     if (colorList.length > 0) {
       colorList.forEach(({color, variable}) => {
         cacheColors[`'${color}'`] = variable
       })
     }
-    callback()
+    console.log(colorList, cacheColors)
+    // resolve({status: 400, message: '找不到檔案'})
   }
 
-  beforeCompile(() => {
+  beforeCompile().then(() => {
     // 循環遍歷所有檔案，跟路徑從 rootPath 開始
     recursiveDir(config, () => cacheFileLength++, (_, path, data) => compile(data, path))
 
