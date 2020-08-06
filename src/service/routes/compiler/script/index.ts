@@ -184,7 +184,7 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
     ++compileCurrent === cacheFileLength && (async () => {
       try {
         await Promise.all([loopFilesToChangeVariable(), createColorDeclareFile()])
-        resolve({
+        return resolve({
           status: 200,
           message: '交叉編譯成功！',
         })
@@ -199,21 +199,21 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
     const colorList: iColorList = await getDeclaredColors(config)
     if (colorList.length > 0) {
       colorList.forEach(({color, variable}) => {
-        cacheColors[`'${color}'`] = variable
+        cacheColors[color.replace(/['"`]/g, '')] = variable
       })
     }
-    console.log(colorList, cacheColors)
-    // resolve({status: 400, message: '找不到檔案'})
   }
 
-  beforeCompile().then(() => {
-    // 循環遍歷所有檔案，跟路徑從 rootPath 開始
+  beforeCompile()
+    .then(() => {
+      // return reject(`e04人力銀行`)
+      // 循環遍歷所有檔案，跟路徑從 rootPath 開始
     recursiveDir(config, () => cacheFileLength++, (_, path, data) => compile(data, path))
 
     setTimeout(() => {
       if (compileCurrent === 0) {
-        resolve({status: 400, message: '找不到檔案'})
+        throw new Error('找不到檔案');
       }
     }, 2000)
-  })
+  }).catch((err: string) => reject(err))
 })
