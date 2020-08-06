@@ -6,7 +6,8 @@ import recursiveDir from "../../../utils/recursiveDir";
 import getRgbaColor from "../../../utils/getRgbaColor"
 import getHashColor from "../../../utils/getHashColor"
 import createHash from '../../../utils/createHash'
-import {iGetColor} from "../../../interfaces/color";
+import {iColorList, iGetColor} from "../../../interfaces/color";
+import {getDeclaredColors} from "../../../utils/script/getDeclaredColors";
 
 interface iColorVariable {
   [color: string]: string
@@ -197,12 +198,25 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
     })()
   }
 
-  // 循環遍歷所有檔案，跟路徑從 rootPath 開始
-  recursiveDir(config, () => cacheFileLength++, (_, path, data) => compile(data, path))
-
-  setTimeout(() => {
-    if (compileCurrent === 0) {
-      resolve({status: 400, message: '找不到檔案'})
+  // 遍歷前先提取顏色定義並注入到 cacheColors 裡
+  const beforeCompile = async (callback: () => void) => {
+    const colorList: iColorList = await getDeclaredColors(config)
+    if (colorList.length > 0) {
+      colorList.forEach(({color, variable}) => {
+        cacheColors[`'${color}'`] = variable
+      })
     }
-  }, 2000)
+    callback()
+  }
+
+  beforeCompile(() => {
+    // 循環遍歷所有檔案，跟路徑從 rootPath 開始
+    recursiveDir(config, () => cacheFileLength++, (_, path, data) => compile(data, path))
+
+    setTimeout(() => {
+      if (compileCurrent === 0) {
+        resolve({status: 400, message: '找不到檔案'})
+      }
+    }, 2000)
+  })
 })
