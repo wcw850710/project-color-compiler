@@ -21,10 +21,10 @@ export default (input: string, index: number, returnIndexCallback: (index: numbe
       if(txt === ')') endBracketsLen++
       color+=txt
       index++
-      // if(txt === '$') {
-      //   isRgba = false
-      //   break
-      // }
+      if(txt === '$') {
+        isRgba = false
+        break
+      }
       if(endBracketsLen === startBracketsLen) {
         isRgba = true
         break

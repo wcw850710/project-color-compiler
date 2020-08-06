@@ -23,7 +23,8 @@ const recursiveDir: iRecursiveDir = (config, readFileBeforeCallback, readFileCal
       const newPath: string = rootPath + fileName
       const fileExtensionName: string = path.extname(fileName)
       const isFolder: boolean = fs.lstatSync(rootPath + fileName).isDirectory()
-      if (fileExtensions[fileExtensionName] && fileName !== compileFile && fileName !== 'variables.scss' && newPath.indexOf('vue-sidebar-menu') === -1) {
+      // TODO 添加過濾文件
+      if (fileExtensions[fileExtensionName] && fileName !== compileFile) {
         readFileBeforeCallback()
         fs.readFile(newPath, (_, data) => {
           const fileData: string = data.toString()

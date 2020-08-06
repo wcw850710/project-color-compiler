@@ -38,10 +38,10 @@ const compiler =  (_config: iOriginConfig): Promise<iReslove> => new Promise((re
     const colorsFileData: iFileResult = await getFileColors(compileFilePath)
     let colorsFileResult: string = ''
     if (Object.keys(result).length) {
-      // TODO 這裡判斷待修正，多餘的判斷欠砍
       const isSass: boolean = fileExtensions['.sass'] === true
       const isScss: boolean = fileExtensions['.scss'] === true
       const isVue: boolean = fileExtensions['.vue'] === true
+      const isJS: boolean = fileExtensions['.js'] === true
       if (isSass || isScss || isVue) {
         for (const color in colorsFileData) {
           const colorData: iColorJSONContent | {} = colorsFileData[color]
@@ -76,6 +76,9 @@ const compiler =  (_config: iOriginConfig): Promise<iReslove> => new Promise((re
             delete result[color]
           }
         }
+      } else if(isJS) {
+        console.log('hello js!')
+        return reslove({status: 200, message: '顏色更新成功'})
       }
       fs.writeFileSync(compileFilePath, colorsFileResult)
       transformAllFilesColorToVariable(resultColorVariables)
@@ -164,8 +167,10 @@ const compiler =  (_config: iOriginConfig): Promise<iReslove> => new Promise((re
     let styleTagStartIndex: number = 0
     let styleTagEndIndex: number = 0
     let hasVueStyleTag: boolean = false
-    const whileCondition: () => boolean = () => isVue ? cur > styleTagStartIndex && cur < styleTagEndIndex && hasVueStyleTag === true : cur < input.length
-      // 如果是 vue 檔，跑一波初始值定義
+    const whileCondition: () => boolean = () =>
+        isVue ? cur > styleTagStartIndex && cur < styleTagEndIndex && hasVueStyleTag === true
+          : cur < input.length
+    // 如果是 vue 檔，跑一波初始值定義
     ;(function initCurIndex(): void {
       if (isVue) {
         // 從 style tag 裡開始計算
@@ -176,6 +181,9 @@ const compiler =  (_config: iOriginConfig): Promise<iReslove> => new Promise((re
         styleTagStartIndex !== -1 && (hasVueStyleTag = true)
       }
     })()
+    // 取得 js 的 ={} 內值及 ='' :'' hash 及 rgba color
+    // =\s*{[\n\sA-z0-9$#'"`?:_\-,&|().{}]*\}|[=:]\s*['"`](#[A-z0-9]*|rgba\(\s*[0-9,.\s]*\s*\))['"`]
+    // 取得
     while (whileCondition()) {
       const txt = input[cur]
       if (txt === ':') {
