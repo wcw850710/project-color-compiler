@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import {iComputedConfig} from "../interfaces/config";
+import {iComputedConfig} from "../../interfaces/config";
 interface iResult {
   [variable: string]: string
 }
