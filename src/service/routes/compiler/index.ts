@@ -3,6 +3,7 @@ import { scriptCompile } from "./script"
 import {iOriginConfig} from '../../interfaces/config'
 import {iExpressRoute} from "../../interfaces/route"
 import getConfig from "../../utils/getConfig";
+import {iResolve} from "./interfaces/resolve";
 
 export const compiler: iExpressRoute = async (req, res) => {
   const { config: originConfig } = req.body as { config: iOriginConfig }
@@ -13,11 +14,11 @@ export const compiler: iExpressRoute = async (req, res) => {
   let message: string = ''
   try {
     if (isScriptFile) {
-      const compileResult = await scriptCompile(config)
+      const compileResult: iResolve = await scriptCompile(config)
       status = compileResult.status
       message = compileResult.message
     } else {
-      const compileResult = await styleCompile(config)
+      const compileResult: iResolve = await styleCompile(config)
       status = compileResult.status
       message = compileResult.message
     }
