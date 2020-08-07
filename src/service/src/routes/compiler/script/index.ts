@@ -183,6 +183,7 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
     }
     ++compileCurrent === cacheFileLength && (async () => {
       try {
+        // TODO 不要用 PromiseAll 用 await -> await
         await Promise.all([loopFilesToChangeVariable(), createColorDeclareFile()])
         return resolve({
           status: 200,
