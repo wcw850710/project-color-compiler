@@ -1,7 +1,7 @@
 import * as express from 'express'
 import * as multer from 'multer'
 import * as path from "path";
-import router from './routes'
+import router from './src/routes'
 const app = express();
 const upload = multer()
 

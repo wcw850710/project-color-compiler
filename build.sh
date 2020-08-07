@@ -1,4 +1,4 @@
-cd ./src/service
+cd ./src/service/src
 yarn run build:service
-cd ../gui
+cd ../../gui
 yarn run build:gui
