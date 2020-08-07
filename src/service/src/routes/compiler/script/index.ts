@@ -104,8 +104,9 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
 
   // 編譯 js file 並儲存 cache
   const compile = (input: string, filePath: string) => {
-    const getColorRegex: RegExp = /{[\n\sA-z0-9$#'"`?:_\-,&|().{}]*}|=\s*['"`](#[A-z0-9]*|rgba\(\s*[0-9,.\s]*\s*\))['"`]/gm
+    const getColorRegex: RegExp = /`[^`]*`|{[\n\sA-z0-9$#'"`?:_\-,&|().{}]*}|=\s*['"`](#[A-z0-9]*|rgba\(\s*[0-9,.\s]*\s*\))['"`]/gm
     const bracketAndStringColors: RegExpMatchArray | null = input.match(getColorRegex)
+    console.log(bracketAndStringColors)
     if (bracketAndStringColors !== null) {
       const result: iCompileData[] = []
       bracketAndStringColors.forEach((matchResult: string) => {
@@ -182,6 +183,7 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
       })
     }
     ++compileCurrent === cacheFileLength && (async () => {
+      return reject(false)
       try {
         // TODO 不要用 PromiseAll 用 await -> await
         await Promise.all([loopFilesToChangeVariable(), createColorDeclareFile()])
