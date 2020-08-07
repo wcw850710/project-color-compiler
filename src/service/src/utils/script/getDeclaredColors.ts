@@ -1,7 +1,7 @@
 import {iComputedConfig} from "../../interfaces/config";
 import {iColorList} from "../../interfaces/color";
 import * as fs from "fs";
-
+//TODO 編譯的顏色不要包含 '' 單引號
 // 取得定義好的顏色
 export const getDeclaredColors = ({ compileFilePath }: iComputedConfig): Promise<iColorList> => new Promise<iColorList>((resolve) => {
   try {
