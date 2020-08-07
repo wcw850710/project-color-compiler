@@ -4,11 +4,11 @@ import { compiler } from './compiler'
 // import * as fs from 'fs'
 // import * as createHash from '../utils/createHash'
 import renderGui from './renderGui'
-import getColors from './getColors'
 import getFilePath from './getFilePath'
 import translateColorsAndVariables from './translateColorsAndVariables'
 import { before as beforeDownloadProjectsJSON, download as downloadProjectsJSON } from './downloadProjects'
 import importProject from "./importProject";
+import {getColors} from "./getColors";
 
 // 渲染 gui
 router.get('/', renderGui)

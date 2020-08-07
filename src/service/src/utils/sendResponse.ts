@@ -1,9 +1,5 @@
 import * as express from 'express'
-import {iResolve} from "../routes/compiler/interfaces/resolve";
-
-interface iReturnResponse extends iResolve {
-  data: any
-}
+import {iReturnResponse} from "../interfaces/resolve";
 
 export const sendResponse = (
   res: express.Response,

@@ -6,7 +6,7 @@ import getConfig from "../../utils/getConfig";
 import {checkScriptOrStyle} from "../../utils/checkScriptOrStyle";
 import {sendResponse} from "../../utils/sendResponse";
 
-export const compiler: iExpressRoute = async (req, res) => {
+export const compiler: iExpressRoute = (req, res) => {
   const {config: originConfig} = req.body as { config: iOriginConfig }
   const config = getConfig(originConfig)
   checkScriptOrStyle(config, () => scriptCompile(config), () => styleCompile(config))

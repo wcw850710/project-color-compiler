@@ -9,7 +9,7 @@ import getPathExtension from '../../../utils/getPathExtension'
 import {compile as vueCompile, iVueData} from '../../../utils/style/getVueStyle'
 import {iComputedConfig} from '../../../interfaces/config'
 import {iGetColor} from "../../../interfaces/color";
-import {iResolve} from "../interfaces/resolve";
+import {iResolve} from "../../../interfaces/resolve";
 
 interface iResultColorVariables {
   [color: string]: string

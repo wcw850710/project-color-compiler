@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import {iComputedConfig} from "../../../interfaces/config";
-import {iResolve} from "../interfaces/resolve";
+import {iResolve} from "../../../interfaces/resolve";
 import getToColorFilePath from '../../../utils/getToColorFilePath'
 import recursiveDir from "../../../utils/recursiveDir";
 import getRgbaColor from "../../../utils/getRgbaColor"
