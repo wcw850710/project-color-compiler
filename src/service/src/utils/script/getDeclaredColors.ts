@@ -28,8 +28,9 @@ export const getDeclaredColors = ({ compileFilePath }: iComputedConfig): Promise
         matchColors.forEach(matchColor => {
           const [variable, commitColor] = matchColor.split(/:\s*/)
           const [color, commit] = commitColor.split(/,\s*[\/]{2}\s*/)
+          const formatColor: string = color.replace(/['"`]/g, '')
           colorList.push({
-            color, variable, commit: commit || ''
+            color: formatColor, variable, commit: commit || ''
           })
         })
       }

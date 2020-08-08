@@ -242,14 +242,13 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
     const colorList: iColorList = await getDeclaredColors(config)
     if (colorList.length > 0) {
       colorList.forEach(({color, variable}) => {
-        cacheColors[color.replace(/['"`]/g, '')] = variable
+        cacheColors[color] = variable
       })
     }
   }
 
   beforeCompile()
     .then(() => {
-      // return reject(`e04人力銀行`)
       // 循環遍歷所有檔案，跟路徑從 rootPath 開始
     recursiveDir(config, () => cacheFileLength++, (_, path, data) => compile(data, path))
 
