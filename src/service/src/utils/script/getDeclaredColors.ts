@@ -23,7 +23,7 @@ export const getDeclaredColors = ({ compileFilePath }: iComputedConfig): Promise
         index++
       }
       const braceUglyFileData: string = afterExportFileData.substr(openBraceIndex, closeBraceIndex)
-      const matchColors: RegExpMatchArray | null = braceUglyFileData.match(/[A-z0-9$_]*:\s*['"`](rgba\s*\([0-9,.\s]*\)|#[A-z0-9]*)['"`](\s*,\s*[\/]{2}.*)?/gm)
+      const matchColors: RegExpMatchArray | null = braceUglyFileData.match(/[A-z0-9$_]*:\s*['"`].*['"`](\s*,\s*[\/]{2}.*)?/gm)
       if (matchColors !== null) {
         matchColors.forEach(matchColor => {
           const [variable, commitColor] = matchColor.split(/:\s*/)
