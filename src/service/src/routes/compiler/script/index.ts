@@ -52,6 +52,7 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
 
   // 建立顏色申明文件
   const createColorDeclareFile = () => new Promise<boolean>(resolve => {
+    // return resolve(true)
     const isTs: boolean = compileFileType === 'ts'
     const fileName: string = compileFileName
     const cacheColorsKeys: string[] = Object.keys(cacheColors)
@@ -74,6 +75,7 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
 
   // 遍歷檔案寫入變量
   const loopFilesToChangeVariable = () => new Promise<boolean>((resolve) => {
+    // return resolve(true)
     const cacheFilesLen = cacheFiles.length
     if (cacheFilesLen > 0) {
       const checkIsImportRegex: RegExp = new RegExp(`import\\s*{\\s*${compileFileName}\\s*}\\s*from\\s['"\`][.\\/@$_\\-A-z0-9]*['"\`];?$`, 'm')
@@ -104,9 +106,9 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
 
   // 編譯 js file 並儲存 cache
   const compile = (input: string, filePath: string) => {
-    const getColorRegex: RegExp = /`[^`]*`|{[\n\sA-z0-9$#'"`?:_\-,&|().{}]*}|=\s*['"`](#[A-z0-9]*|rgba\(\s*[0-9,.\s]*\s*\))['"`]/gm
+    // 取得 ``, {} 內的顏色及 ={}, ='' 的顏色及單純 '' 的顏色
+    const getColorRegex: RegExp = /`[^`]*`|{[\n\sA-z0-9$#'"`?:_\-,&|().{}]*}|=\s*['"`](#[A-z0-9]*|rgba\(\s*[0-9,.\s]*\s*\))['"`]|['"`]+\s*(#[A-z0-9]*|rgba\(\s*[0-9,.\s]*\))\s*['"`]+/gm
     const bracketAndStringColors: RegExpMatchArray | null = input.match(getColorRegex)
-    console.log(bracketAndStringColors)
     if (bracketAndStringColors !== null) {
       const result: iCompileData[] = []
       bracketAndStringColors.forEach((matchResult: string) => {
@@ -117,6 +119,43 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
           contentFrom = 'equal-str'
           const formatColor: string = matchResult.substr(1, matchResult.length).trim().replace(/[\s'"`]/g, '')
           recordCacheJSColors(formatColor, (variable: string) => compileContent = `={${compileFileName}.${variable}}`)
+        } else if(firstStr === '`') {
+          contentFrom = 'quotation-marks'
+          const getHashAndRgbaColorRegex: RegExp = /(['"`]?|['"`]+\s*)(#[A-z0-9]*|rgba\(\s*[0-9,.\s]*\))(\s*['"`]+|['"`]?)/gm
+          const matchedColors: RegExpMatchArray | null = matchResult.match(getHashAndRgbaColorRegex)
+          if(matchedColors !== null) {
+            matchedColors.forEach((color: string) => {
+              const content: string = compileContent !== '' ? compileContent : matchResult
+              const colorLen: number = color.length
+              const colorFirstStr: string = color[0]
+              const colorLastStr: string = color[colorLen - 1]
+              const checkHasQuotationMarksRegex: RegExp = /['"`]/
+              const hasFirstQuotationMarks: boolean = checkHasQuotationMarksRegex.test(colorFirstStr)
+              const hasLastQuotationMarks: boolean = checkHasQuotationMarksRegex.test(colorLastStr)
+              // 表示為前後都有引號的顏色，如：'#fff'，可以直接寫入變量
+              if(hasFirstQuotationMarks && hasLastQuotationMarks) {
+                const formatColor: string = color.trim().replace(/[\s'"`]/g, '')
+                recordCacheJSColors(formatColor, (variable: string) => compileContent = content.replace(color, `${compileFileName}.${variable}`))
+              } else if(hasFirstQuotationMarks) {
+                // 表示為只有最後有引號的顏色，如：#fff'
+                const formatColor: string = color.trim().replace(/[\s'"`]/g, '')
+                recordCacheJSColors(formatColor, (variable: string) => compileContent = content.replace(color, `${compileFileName}.${variable} + '`))
+              } else if(hasLastQuotationMarks) {
+                // 表示為只有前面有引號的顏色，如：'#fff
+                const formatColor: string = color.trim().replace(/[\s'"`]/g, '')
+                recordCacheJSColors(formatColor, (variable: string) => compileContent = content.replace(color, `' + ${compileFileName}.${variable}`))
+              } else {
+                // 表示為無引號的顏色，如：#fff，需要 ${} 寫入變量
+                const formatColor: string = color.trim().replace(/[\s]/g, '')
+                recordCacheJSColors(formatColor, (variable: string) => compileContent = content.replace(color, `\${${compileFileName}.${variable}}`))
+              }
+            })
+          }
+        } else if(/['"`]/.test(firstStr)) {
+          // 純 '' 的值
+          contentFrom = 'simple-str'
+          const formatColor: string = matchResult.trim().replace(/[\s'"`]/g, '')
+          recordCacheJSColors(formatColor, (variable: string) => compileContent = `${compileFileName}.${variable}`)
         } else {
           contentFrom = 'brackets'
           const isSimpleColor: boolean = /^{\s*['"`]\s*(#[A-z0-9]+|rgba\s*\([0-9\s,.]*\)\s*)\s*['"`]\s*}$/.test(matchResult)
@@ -170,11 +209,13 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
             }
           }
         }
-        result.push({
-          contentFrom,
-          originContent: matchResult,
-          compileContent,
-        })
+        if(compileContent !== '') {
+          result.push({
+            contentFrom,
+            originContent: matchResult,
+            compileContent,
+          })
+        }
       })
       cacheFiles.push({
         filePath,
@@ -183,10 +224,9 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
       })
     }
     ++compileCurrent === cacheFileLength && (async () => {
-      return reject(false)
       try {
-        // TODO 不要用 PromiseAll 用 await -> await
-        await Promise.all([loopFilesToChangeVariable(), createColorDeclareFile()])
+        await createColorDeclareFile()
+        await loopFilesToChangeVariable()
         return resolve({
           status: 200,
           message: '交叉編譯成功！',
