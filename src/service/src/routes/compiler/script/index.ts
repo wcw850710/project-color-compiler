@@ -8,6 +8,7 @@ import getHashColor from "../../../utils/getHashColor"
 import createHash from '../../../utils/createHash'
 import {iColorList, iGetColor} from "../../../interfaces/color";
 import {getDeclaredColors} from "../../../utils/script/getDeclaredColors";
+import {createColorDeclare} from "../../../utils/script/createColorDeclare";
 
 interface iColorVariable {
   [color: string]: string
@@ -32,7 +33,7 @@ interface iReplaceColors {
 
 
 export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new Promise((resolve, reject) => {
-  const {compileFileType, compileFileName, compileFilePath, isAutoImport}: iComputedConfig = config
+  const {compileFileName, compileFilePath, isAutoImport}: iComputedConfig = config
   const cacheColors: iColorVariable = {} // {["'" + color + "'"]: variable}
   const cacheFiles: iCacheFiles[] = []
   let cacheFileLength: number = 0
@@ -53,23 +54,8 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
   // 建立顏色申明文件
   const createColorDeclareFile = () => new Promise<boolean>(resolve => {
     // return resolve(true)
-    const isTs: boolean = compileFileType === 'ts'
-    const fileName: string = compileFileName
-    const cacheColorsKeys: string[] = Object.keys(cacheColors)
-    let result = `export const ${fileName}`
-    if(isTs) {
-      result = `interface iColor { [variable: string]: string }\n\n${result}: iColor`
-    }
-    result += ` = {`
-    if(cacheColorsKeys.length > 0) {
-      result += '\n'
-      cacheColorsKeys.forEach(color => {
-        const variable = cacheColors[color]
-        result += `  ${variable}: '${color}',\n`
-      })
-    }
-    result += '}'
-    fs.writeFileSync(compileFilePath, result)
+    const fileData: string = createColorDeclare(config, cacheColors)
+    fs.writeFileSync(compileFilePath, fileData)
     resolve(true)
   })
 
