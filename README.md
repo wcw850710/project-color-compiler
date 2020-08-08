@@ -6,7 +6,11 @@
 
 目前支持 sass, scss, Vue<style\> 及 t/js(含 styleComponent) 編譯。
 
-該版本仍為試驗性質，可能藏有 bug，建議 commit 完檔案後再行編譯。
+此為練習專案尚為為試驗性質，可能蘊藏 BUG，建議 Commit 完檔案後再行編譯。
+
+- **使用的技術有：**
+    - **前台** Vue 全家桶  
+    - **後台** Express + Typescript
 
 ---
 
