@@ -5,10 +5,10 @@
       <h1 :style="{color: isNight ? '#fff' : '#000'}">專案顏色管理工具<span class="beta">BETA</span></h1>
       <i class="theme night el-icon-moon" @click="onChanceTheme" v-if="isNight"></i>
       <i class="theme el-icon-sunny" @click="onChanceTheme" v-else></i>
-      <div class="tip" :style="{color: isNight ? '#fff' : '#000'}">
+      <a class="tip" :style="{color: isNight ? '#fff' : '#000'}" href="https://github.com/frank575/project-color-compiler" target="_blank">
         <i class="el-icon-question"></i>
         <div>使用說明</div>
-      </div>
+      </a>
 <!--      <el-page-header v-if="routeName === 'project'" @back="goBack" :content="projectName" />-->
     </header>
     <router-view/>
@@ -86,6 +86,7 @@
       align-items: center;
       margin-left: 12px;
       cursor: pointer;
+      text-decoration: none;
       &:hover {
         color: #409EFF;
       }
