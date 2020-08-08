@@ -12,13 +12,13 @@
 
 ## 專案啟動
 
-> 第一次啟動需要 build 打包
+### 首次啟動需要 build 打包
 
 1. git clone https://github.com/frank575/project-color-compiler.git
 2. cd project-color-compiler
 3. npm run build
 
-> 非第一次啟動
+### 非首次啟動
 
 1. 進入 dist 資料夾點擊 start.sh 啟動
 
