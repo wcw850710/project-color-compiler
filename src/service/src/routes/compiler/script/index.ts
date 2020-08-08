@@ -137,13 +137,13 @@ export const scriptCompile = (config: iComputedConfig): Promise<iResolve> => new
                 const formatColor: string = color.trim().replace(/[\s'"`]/g, '')
                 recordCacheJSColors(formatColor, (variable: string) => compileContent = content.replace(color, `${compileFileName}.${variable}`))
               } else if(hasFirstQuotationMarks) {
-                // 表示為只有最後有引號的顏色，如：#fff'
-                const formatColor: string = color.trim().replace(/[\s'"`]/g, '')
-                recordCacheJSColors(formatColor, (variable: string) => compileContent = content.replace(color, `${compileFileName}.${variable} + '`))
-              } else if(hasLastQuotationMarks) {
                 // 表示為只有前面有引號的顏色，如：'#fff
                 const formatColor: string = color.trim().replace(/[\s'"`]/g, '')
-                recordCacheJSColors(formatColor, (variable: string) => compileContent = content.replace(color, `' + ${compileFileName}.${variable}`))
+                recordCacheJSColors(formatColor, (variable: string) => compileContent = content.replace(color, `${compileFileName}.${variable} + ${colorFirstStr}`))
+              } else if(hasLastQuotationMarks) {
+                // 表示為只有最後有引號的顏色，如：#fff'
+                const formatColor: string = color.trim().replace(/[\s'"`]/g, '')
+                recordCacheJSColors(formatColor, (variable: string) => compileContent = content.replace(color, `${colorLastStr} + ${compileFileName}.${variable}`))
               } else {
                 // 表示為無引號的顏色，如：#fff，需要 ${} 寫入變量
                 const formatColor: string = color.trim().replace(/[\s]/g, '')
