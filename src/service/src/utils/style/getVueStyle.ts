@@ -4,7 +4,7 @@ export interface iVueData {
   styleData: string
 }
 
-export const matchVueStartStyleTag: RegExp = /^\s*<\s*style\s*lang\s*=\s*['"]s[ca]ss['"]\s*(scoped|\s*)*>+\s*$|^\s*<\s*style\s*(scoped|\s*)*lang\s*=\s*['"]s[ca]ss['"]\s*>\s*$/m
+export const matchVueStartStyleTag: RegExp = /<\s*style\s*lang\s*=\s*['"]s[ca]ss['"]\s*(scoped|\s*)*>+|<\s*style\s*(scoped|\s*)*lang\s*=\s*['"]s[ca]ss['"]\s*>/m
 
 export const compile = (vueStr: string): iVueData => {
   const matchVueEndStyleTag: RegExp = /^\s*<\s*\/\s*style\s*>\s*$/m
