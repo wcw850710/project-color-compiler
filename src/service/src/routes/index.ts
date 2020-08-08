@@ -9,6 +9,7 @@ import { translateColorsAndVariables } from './translateColorsAndVariables'
 import { before as beforeDownloadProjectsJSON, download as downloadProjectsJSON } from './downloadProjects'
 import importProject from "./importProject";
 import {getColors} from "./getColors";
+// import {updateProject} from "./updateProject";
 
 // 渲染 gui
 router.get('/', renderGui)
@@ -21,6 +22,9 @@ router.post('/getColors', getColors)
 
 // 取代所有顏色及變量
 router.post('/translateColorsAndVariables', translateColorsAndVariables)
+
+// 廢棄，更新專案
+// router.get('/updateProject', updateProject)
 
 // 廢棄，新增顏色時新增在後
 // router.post('/addColors', async (req, res) => {

@@ -12,7 +12,10 @@
 <!--      <el-page-header v-if="routeName === 'project'" @back="goBack" :content="projectName" />-->
     </header>
     <router-view/>
-    <footer :style="{color: isNight ? '#fff' : '#000'}">@Frank<span @click="isReportDialog = true">v0.0.0</span></footer>
+    <footer :style="{color: isNight ? '#fff' : '#000'}">
+      @Frank
+      <span class="version" @click="isReportDialog = true">v0.0.0</span>
+    </footer>
 
     <el-dialog
       :class="{'night-dialog': isNight}"
@@ -49,7 +52,7 @@
     methods: {
       onChanceTheme() {
         return this.isNight ? this.$store.commit('SET_THEME', 'sun') : this.$store.commit('SET_THEME', 'night')
-      }
+      },
       // goBack() {
       //   this.$router.push('/')
       // }
@@ -111,9 +114,9 @@
     font-size: 12px;
     letter-spacing: 1px;
     z-index: 1001;
-    span {
+    .version {
       text-decoration: underline;
-      margin-left: 8px;
+      margin: 0 8px;
       display: inline-block;
       cursor: pointer;
     }

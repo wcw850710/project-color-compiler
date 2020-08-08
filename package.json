@@ -1,0 +1,11 @@
+{
+  "name": "project-color-compiler",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/frank575/project-color-compiler.git",
+  "author": "吳俊緯 <wcw850710@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "node tools/build.js"
+  }
+}

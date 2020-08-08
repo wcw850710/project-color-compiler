@@ -12,7 +12,7 @@ app.use(upload.single('file')); // for parsing multipart/form-data
 app.use('/', express.static(path.resolve('./gui')))
 app.use('/', router)
 
-app.listen(4200, function () {
+export const appListener = app.listen(4200, function () {
   console.log('服務已開啟，請查看 http://localhost:4200');
 });
 
