@@ -5,7 +5,7 @@ import { compiler } from './compiler'
 // import * as createHash from '../utils/createHash'
 import renderGui from './renderGui'
 import getFilePath from './getFilePath'
-import translateColorsAndVariables from './translateColorsAndVariables'
+import { translateColorsAndVariables } from './translateColorsAndVariables'
 import { before as beforeDownloadProjectsJSON, download as downloadProjectsJSON } from './downloadProjects'
 import importProject from "./importProject";
 import {getColors} from "./getColors";
