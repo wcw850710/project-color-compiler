@@ -2,7 +2,10 @@
   <div id="app" :style="{backgroundColor: isNight ? '#303133' : '#fff'}">
 <!--    <header :style="{justifyContent: routeName === 'home' ? 'center' : 'flex-start'}">-->
     <header>
-      <h1 :style="{color: isNight ? '#fff' : '#000'}">專案顏色管理工具<span class="beta">BETA</span></h1>
+      <div class="logo" :style="{color: isNight ? '#fff' : '#000'}">
+        <img class="pic" src="./assets/logo.svg" alt="">
+        <h1>專案顏色管理工具<span class="beta">BETA</span></h1>
+      </div>
       <i class="theme night el-icon-moon" @click="onChanceTheme" v-if="isNight"></i>
       <i class="theme el-icon-sunny" @click="onChanceTheme" v-else></i>
       <a class="tip" :style="{color: isNight ? '#fff' : '#000'}" href="https://github.com/frank575/project-color-compiler" target="_blank">
@@ -69,10 +72,18 @@
     align-items: center;
     padding: 10px 20px;
     border-bottom: 1px solid #DCDFE6;
-    h1 {
-      margin-right: 30px;
-      font-size: 24px;
-      font-weight: 900;
+    .logo {
+      display: flex;
+      align-items: center;
+      .pic {
+        width: 30px;
+        margin-right: 8px;
+      }
+      h1 {
+        margin-right: 30px;
+        font-size: 24px;
+        font-weight: 900;
+      }
     }
     .theme {
       margin-left: auto;
