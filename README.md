@@ -2,6 +2,8 @@
 
 > Version: v0.0.0
 
+![](./assets/hero.png)
+
 用來將專案的哈希及 rgba 顏色編譯到對應的檔案裡，好統一管理顏色及加速開發這樣就不用記憶每個顏色的變量名稱，可以直接從設計稿上複製顏色再進行編譯管理。
 
 目前支持 sass, scss, Vue<style\> 及 t/js(含 styleComponent) 編譯。
